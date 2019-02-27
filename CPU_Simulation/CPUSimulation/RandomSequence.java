@@ -1,9 +1,6 @@
 package CPUSimulation;
 
 import java.util.Random;
-
-
-
 /*
  * A RandomSequence class which will generate 4*n random doubles using the exponential distribution algorithm. 
  * The code might be removed to be implemented in other classes, but for now, it will stay in a isolated class
