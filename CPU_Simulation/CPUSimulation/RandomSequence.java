@@ -33,7 +33,11 @@ class RandomSequence{
 		Random randomGenerator = new Random();
 		randomGenerator.setSeed(seed);
 		for(int i=0;i<4*n;i++) {
-			sequence[i]=-1*Math.log(1-randomGenerator.nextDouble()%1)/lambda;
+			double randomValue = -1*Math.log(1-randomGenerator.nextDouble()%1)/lambda;
+			if(randomValue<upper)
+				sequence[i]=randomValue;
+			else
+				i--;
 		}
 	}
 	
