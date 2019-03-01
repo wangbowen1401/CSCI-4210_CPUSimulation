@@ -17,7 +17,6 @@ class RandomSequence{
 	private final double upper;
 	private final int n;
 	
-	
 	RandomSequence(long seed,double lambda,double upper,int n){
 		sequence = new double[4*n];
 		this.seed = seed;
@@ -27,16 +26,26 @@ class RandomSequence{
 		random();
 	}
 	
+	// Return a copy of the random sequence 
+	public double[] getSequence(){
+		double [] copy = new double[4*n];
+		for(int i =0;i<4*n;i++)
+			copy[i]=sequence[i];
+		return copy;
+	}
+	
 	//In case the class is not needed anymore
 	//public void random(double seed,double lambda,double upper,int n)
-	public void random() {
+	public void random(){
 		Random randomGenerator = new Random();
 		randomGenerator.setSeed(seed);
 		for(int i=0;i<4*n;i++) {
-			sequence[i]=-1*Math.log(1-randomGenerator.nextDouble()%1)/lambda;
+			if(-1*Math.log(1-randomGenerator.nextDouble()%1)/lambda<upper)
+				sequence[i]=-1*Math.log(1-randomGenerator.nextDouble()%1)/lambda;
 		}
 	}
 	
+	// String to show all the data
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
