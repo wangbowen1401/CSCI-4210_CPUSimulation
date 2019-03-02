@@ -26,6 +26,11 @@ class Process {
 		processID = id;	
 	}
 	
+	Process(char id,double guess){
+		processID = id;
+		burstTimeGuess = guess;
+	}
+	
 	public char getProcessID() {
 		return processID;
 	}
