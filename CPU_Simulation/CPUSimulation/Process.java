@@ -13,7 +13,7 @@ class Process {
 	double ioBurstTime;
 	char processID;
 	
-	
+	// Need getters and setters for changing variables
 	Process(char id,double [] randomValues,double lambda){
 		burstTimeGuess = 1/lambda;
 		state = "READY";
@@ -26,5 +26,11 @@ class Process {
 		processID = id;	
 	}
 	
+	public char getProcessID() {
+		return processID;
+	}
 	
+	public double getTimeGuess() {
+		return burstTimeGuess;
+	}
 }
