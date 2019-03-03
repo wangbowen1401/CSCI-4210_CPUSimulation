@@ -37,15 +37,20 @@ class RandomSequence{
 		Random randomGenerator = new Random();
 		randomGenerator.setSeed(seed);
 		for(int i=0;i<4*n;i++) {
-			if(-1*Math.log(1-randomGenerator.nextDouble()%1)/lambda<upper)
-				sequence[i]=-1*Math.log(1-randomGenerator.nextDouble()%1)/lambda;
 			double randomValue = -1*Math.log(1-randomGenerator.nextDouble()%1)/lambda;
 			if(randomValue<upper)
-				sequence[i]=randomValue;
+				sequence[i]=randomGenerator.nextDouble()%1;
 			else
 				i--;
-
 		}
+	}
+	
+	public int size() {
+		return n;
+	}
+	
+	public double getLambda() {
+		return lambda;
 	}
 	
 	// String to show all the data
