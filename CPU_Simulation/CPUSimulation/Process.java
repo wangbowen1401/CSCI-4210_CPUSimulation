@@ -5,9 +5,9 @@ import java.util.Comparator;
 class ArrivalComparator implements Comparator<Process>{
 	@Override
 	public int compare(Process a,Process b) {
-		if (a.arrivalTime<b.arrivalTime)
-			return -1;
-		else if(a.arrivalTime==b.arrivalTime) {
+		if (a.arrivalTime!=b.arrivalTime)
+			return (int)(a.arrivalTime-b.arrivalTime);
+		else {
 			if(a.getState()=="BLOCKED"&&b.getState()=="BLOCKED") {
 				return a.getProcessID()<b.getProcessID()?-1:1;
 			}
@@ -43,7 +43,7 @@ class Process{
 		burstTimeGuess = 1/lambda;
 		this.alpha = alpha;
 		arrivalTime = -1*Math.log(1-randomValues[0])/lambda;
-		numCPUBurst = 1;//(int)(randomValues[1]*100);
+		numCPUBurst = 2;//(int)(randomValues[1]*100);
 		if(numCPUBurst==0) {
 			state="COMPLETE";
 		}
@@ -57,6 +57,7 @@ class Process{
 		turnaroundTime = new double [numCPUBurst];
 		//Arrays.fill(turnaroundTime, contextSwitch); //Add when we consider context switch
 		Arrays.fill(waitTime, 0);
+		Arrays.fill(turnaroundTime, cpuBurstTime);
 		enterTime = -1;
 		numPreempt = 0;
 		numContextSwitch=0;
@@ -127,6 +128,10 @@ class Process{
 	public int getNumBurst() {
 		return numCPUBurst;
 	}
+	
+	public void resetEnterTime() {
+		enterTime=-1;
+	}
 	// String to show all the data
 	@Override
 	public String toString() {
@@ -136,19 +141,15 @@ class Process{
 		sb.append("# of CPU Bursts: "+numCPUBurst+"\n");
 		sb.append("CPU Burst Time: "+cpuBurstTime+"\n");
 		sb.append("I/O Burst Time: "+ioBurstTime+"\n");
-		sb.append("Waiting Time: ");
-		for(int i =0;i<numCPUBurst;i++) {
-			if(waitTime[i]==0)
-				break;
+		/*sb.append("Waiting Time: ");
+		for(int i =0;i<2;i++) {
 			sb.append(waitTime[i]+" ");
 		}
 		sb.append("\nTurnaround Time: ");
-		for(int i =0;i<numCPUBurst;i++) {
-			if(turnaroundTime[i]==0)
-				break;
-			sb.append(turnaroundTime[i]);
+		for(int i =0;i<2;i++) {
+			sb.append(turnaroundTime[i]+" ");
 		}
-		sb.append("\n");
+		sb.append("\n");*/
 		
 		return sb.toString();
 	}

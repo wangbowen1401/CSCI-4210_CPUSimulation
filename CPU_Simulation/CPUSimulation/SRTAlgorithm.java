@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.lang.Math;
 
 
 // Basically wants a queue that orders by remaining time and the order the items
@@ -53,11 +54,14 @@ public class SRTAlgorithm{
 	 * 		
 	 */
 	public void simulate() {
+		if(arrival.size()==0)
+			return;
 		PriorityQueue<Process> pq = new PriorityQueue<Process>(new SRTComparator());
 		Process p = arrival.poll();
 		double count = p.getArrivalTime();
 		while(!arrival.isEmpty()||!pq.isEmpty()||p.getNumBurst()!=0) {
-			
+			System.out.println(count);
+			System.out.println(p);
 			// Add all the process with the same arrival time
 			while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) 
 				pq.add(arrival.poll());
@@ -76,6 +80,7 @@ public class SRTAlgorithm{
 			if(count==running) {
 				p.SRTComplete(count);
 				if(p.getState()!="COMPLETE") {
+					p.resetEnterTime();
 					arrival.add(p);
 				}
 				else
@@ -89,10 +94,9 @@ public class SRTAlgorithm{
 				}
 			}
 			else { // new process arrives before the current process finish
-				System.out.println("Preempt");
-				double remain = p.getRemainingTime()-(count-p.getEnterTime());
+				p.remainingTime = p.getRemainingTime()-(count-p.getEnterTime());
 				// A preemption is needed
-				if(arrival.peek().getTimeGuess()<remain) {
+				if(arrival.peek().getTimeGuess()<p.remainingTime) {
 					p.SRTEnterQueue(count);
 					pq.add(p);
 					p=arrival.poll();
@@ -103,9 +107,7 @@ public class SRTAlgorithm{
 					pq.add(arrival.poll());
 			}
 		}
-		for(Process a:done) {
-			System.out.println(a);
-		}
+
 	}
 	
 	
