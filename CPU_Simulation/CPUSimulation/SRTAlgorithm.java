@@ -15,25 +15,20 @@ class SRTComparator implements Comparator<Process>{
     }
 }
 
-public class Algorithm{
+public class SRTAlgorithm{
 	private PriorityQueue<Process> arrival;
 	private ArrayList<Process> done;
-	// Need a queue for corresponding algorithm 
-	// 
 	
-	// Convert randomSequence into corresponding queue 
-	// Run simulation. Probably need two different constructors
-	public Algorithm(RandomSequence sequence) {
-		arrival = new PriorityQueue<Process>();
+	public SRTAlgorithm(RandomSequence sequence,double alpha,double cw) {
+		arrival = new PriorityQueue<Process>(new ArrivalComparator());
 		double [] values = sequence.getSequence();
 		char id = 'a';
-		for(int i=0;i<sequence.size();i+=3) {
-			Process p = new Process(id,Arrays.copyOfRange(values, i, i+4),sequence.getLambda(),0.5,1.00);
+		for(int i=0;i<sequence.size();i+=4) {
+			Process p = new Process(id,Arrays.copyOfRange(values, i, i+4),sequence.getLambda(),alpha,cw);
 			id++;
 			arrival.add(p);
 		}
-		done = new ArrayList<Process>();
-		
+		done = new ArrayList<Process>();	
 	}
 	/* Pseudocode
 	 * 1. Add a process from arrival queue
@@ -57,46 +52,60 @@ public class Algorithm{
 	 * 		
 	 * 		
 	 */
-	
-	
-	public void SRTSimulation() {
+	public void simulate() {
 		PriorityQueue<Process> pq = new PriorityQueue<Process>(new SRTComparator());
 		Process p = arrival.poll();
 		double count = p.getArrivalTime();
-		while(!arrival.isEmpty()) {
+		while(!arrival.isEmpty()||!pq.isEmpty()||p.getNumBurst()!=0) {
 			
 			// Add all the process with the same arrival time
-			while(count>=arrival.peek().getArrivalTime()) {
+			while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) 
 				pq.add(arrival.poll());
-			}
 			
 			// The process enters CPU
 			p.SRTEnterCPU(count);
 			
-			// If there is nothing else in the ready queue
-			if(pq.isEmpty()) {
-				double complete = p.getRemainingTime()+count;
-				double in =  arrival.peek().getArrivalTime();
-				count = Math.min(complete, in);
-				// The current process will finish before the new process, just 
-				// finish and deal with context switch
-				if(count==complete) {
-					p.SRTComplete(count);
-					if(p.getState()!="COMPLETE") {
-						arrival.add(p);
-					}
-					else
-						done.add(p);
+			// Check all three time from CPU, ready queue, and arrival queue
+			double running = p.getRemainingTime()+count;
+			double in =Integer.MAX_VALUE;
+			if(arrival.size()>0)
+				in =  arrival.peek().getArrivalTime();
+			count = Math.min(running, in);
+			// The current process will finish before the new process, just 
+			// finish and deal with context switch
+			if(count==running) {
+				p.SRTComplete(count);
+				if(p.getState()!="COMPLETE") {
+					arrival.add(p);
 				}
-				else {
-					p.SRTEnterQueue(count);
+				else
+					done.add(p);
+				// Move onto the next process in the ready queue because new process didn't arrive yet.
+				if(pq.size()!=0)
+					p = pq.poll();
+				else if(arrival.size()!=0) {
+					p=arrival.poll();
+					count = p.getArrivalTime();
 				}
-				
 			}
-			
+			else { // new process arrives before the current process finish
+				System.out.println("Preempt");
+				double remain = p.getRemainingTime()-(count-p.getEnterTime());
+				// A preemption is needed
+				if(arrival.peek().getTimeGuess()<remain) {
+					p.SRTEnterQueue(count);
+					pq.add(p);
+					p=arrival.poll();
+					p.SRTEnterCPU(count);
+				}
+				// The new process will not cause preemption, so just add it to the queue
+				else
+					pq.add(arrival.poll());
+			}
 		}
-		
-		
+		for(Process a:done) {
+			System.out.println(a);
+		}
 	}
 	
 	

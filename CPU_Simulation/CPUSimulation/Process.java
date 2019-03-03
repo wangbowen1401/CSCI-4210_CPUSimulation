@@ -32,6 +32,7 @@ class Process{
 	double remainingTime;
 	double ioBurstTime;
 	int numPreempt;
+	int numContextSwitch;
 	
 	double[] waitTime;
 	double[] turnaroundTime;
@@ -42,7 +43,7 @@ class Process{
 		burstTimeGuess = 1/lambda;
 		this.alpha = alpha;
 		arrivalTime = -1*Math.log(1-randomValues[0])/lambda;
-		numCPUBurst = (int)Math.floor(randomValues[1]*100);
+		numCPUBurst = 1;//(int)(randomValues[1]*100);
 		if(numCPUBurst==0) {
 			state="COMPLETE";
 		}
@@ -54,27 +55,32 @@ class Process{
 		processID = id;	
 		waitTime = new double[numCPUBurst];
 		turnaroundTime = new double [numCPUBurst];
-		Arrays.fill(turnaroundTime, contextSwitch); //Add when we consider context switch
+		//Arrays.fill(turnaroundTime, contextSwitch); //Add when we consider context switch
+		Arrays.fill(waitTime, 0);
 		enterTime = -1;
 		numPreempt = 0;
+		numContextSwitch=0;
 		cw = contextSwitch;
 	}
 	
 	
 	
 	/////////////////////////////////// SRT ////////////////////////////////////////////
+	/**  Need to consider context switch **/
 	public void SRTEnterCPU(double time) {
 		state= "RUNNING";
 		if(enterTime!=-1)
 			waitTime[numCPUBurst-1]+=time-enterTime;
-		enterTime = time+cw;// Refers to when the process enter the CPU
+		enterTime = time;// Refers to when the process enter the CPU
 	}
 	
 	public void SRTEnterQueue(double time) {
-		state= "READY";
-		if(enterTime!=-1)
+		if(state == "RUNNING")
 			remainingTime -=(time-enterTime); 
-		enterTime = time+cw;
+		state= "READY";
+		numPreempt++;
+		numContextSwitch++;
+		enterTime = time;
 	}
 	
 	// For SRT when CPU burst is complete
@@ -83,13 +89,14 @@ class Process{
 		turnaroundTime[numCPUBurst]+=waitTime[numCPUBurst];
 		if(numCPUBurst!=0) {
 			state="BLOCKED";
-			arrivalTime = ioBurstTime+time+cw/2;
+			remainingTime = cpuBurstTime;
+			arrivalTime = ioBurstTime+time;
 			burstTimeGuess = alpha*burstTimeGuess+(1-alpha)*turnaroundTime[numCPUBurst];
 		}
 		else {
 			state="COMPLETE";
 		}
-		
+		numContextSwitch++;
 	}
 	
 	///////////////////////////////// Getters and Setters/////////////////////////////////
@@ -113,8 +120,12 @@ class Process{
 		return state;
 	}
 	
-	public void setState() {
-		state="BLOCKED";
+	public double getEnterTime(){
+		return enterTime;
+	}
+	
+	public int getNumBurst() {
+		return numCPUBurst;
 	}
 	// String to show all the data
 	@Override
@@ -124,7 +135,21 @@ class Process{
 		sb.append("Arrival Time: "+arrivalTime+"\n");
 		sb.append("# of CPU Bursts: "+numCPUBurst+"\n");
 		sb.append("CPU Burst Time: "+cpuBurstTime+"\n");
-		sb.append("I/O Burst TIme: "+ioBurstTime+"\n");
+		sb.append("I/O Burst Time: "+ioBurstTime+"\n");
+		sb.append("Waiting Time: ");
+		for(int i =0;i<numCPUBurst;i++) {
+			if(waitTime[i]==0)
+				break;
+			sb.append(waitTime[i]+" ");
+		}
+		sb.append("\nTurnaround Time: ");
+		for(int i =0;i<numCPUBurst;i++) {
+			if(turnaroundTime[i]==0)
+				break;
+			sb.append(turnaroundTime[i]);
+		}
+		sb.append("\n");
+		
 		return sb.toString();
 	}
 }

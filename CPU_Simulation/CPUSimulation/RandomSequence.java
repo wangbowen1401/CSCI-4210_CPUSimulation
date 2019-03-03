@@ -46,7 +46,7 @@ class RandomSequence{
 	}
 	
 	public int size() {
-		return n;
+		return 4*n;
 	}
 	
 	public double getLambda() {
