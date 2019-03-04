@@ -141,7 +141,7 @@ class Process{
 		sb.append("# of CPU Bursts: "+numCPUBurst+"\n");
 		sb.append("CPU Burst Time: "+cpuBurstTime+"\n");
 		sb.append("I/O Burst Time: "+ioBurstTime+"\n");
-		/*sb.append("Waiting Time: ");
+		sb.append("Waiting Time: ");
 		for(int i =0;i<2;i++) {
 			sb.append(waitTime[i]+" ");
 		}
@@ -149,7 +149,7 @@ class Process{
 		for(int i =0;i<2;i++) {
 			sb.append(turnaroundTime[i]+" ");
 		}
-		sb.append("\n");*/
+		sb.append("\n");
 		
 		return sb.toString();
 	}
