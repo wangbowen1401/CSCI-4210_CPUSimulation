@@ -65,43 +65,50 @@ public class SRTAlgorithm{
 				pq.add(arrival.poll());
 			
 			// The process enters CPU
-			if(p.getState()!="RUNNING")
+			if(p.getState()!="RUNNING") {
+				count+=p.cw/2;
 				p.SRTEnterCPU(count);
+			}
 			
-			// Check all three time from CPU, ready queue, and arrival queue
+			// Check the next process arrival time vs remaining time of current process
 			double running = p.getRemainingTime()+p.getEnterTime();
 			double in =Integer.MAX_VALUE;
 			if(arrival.size()>0)
 				in =  arrival.peek().getArrivalTime();
 			count = Math.min(running, in);
+			
 			// The current process will finish before the new process, just 
 			// finish and deal with context switch
 			if(count==running) {
 				//System.out.println("Completing CPU Process");
+				count+=p.cw/2; // Add context switch to move the process out
 				p.SRTComplete(count);
+				// Still more cpu bursts left
 				if(p.getState()!="COMPLETE") {
 					p.resetEnterTime();
 					arrival.add(p);
 				}
+				// Completed all the cpu and io bursts, added to arrayList for analysis
 				else
 					done.add(p);
 				// Move onto the next process in the ready queue because new process didn't arrive yet.
-				if(pq.size()!=0)
+				if(pq.size()!=0&&running!=in) {
 					p = pq.poll();
+				}
 				else if(arrival.size()!=0) {
 					p=arrival.poll();
 					count = p.getArrivalTime();
 				}
 			}
 			else { // new process arrives before the current process finish
-				double remain = p.getRemainingTime()-(count-p.getEnterTime());
+				double remain = p.getRemainingTime()-(count-p.getEnterTime()); 
 				// A preemption is needed
 				if(arrival.peek().getTimeGuess()<remain) {
 					//System.out.println("Preempting CPU Process " + "remainTime: "+remain);
+					count+=p.cw/2;
 					p.SRTEnterQueue(count);
 					pq.add(p);
 					p=arrival.poll();
-					p.SRTEnterCPU(count);
 				}
 				// The new process will not cause preemption, so just add it to the queue
 				else {
@@ -112,10 +119,7 @@ public class SRTAlgorithm{
 				}
 			}
 		}
-		for(Process a:done) {
-			System.out.println(a);
-			System.out.println("\n");
-		}
+		System.out.println("time <"+count+">ms: Simulator ended for <SRT> [Q empty]");
 	}
 	
 	

@@ -43,17 +43,17 @@ class Process{
 	Process(char id,double [] randomValues,double lambda,double alpha,double contextSwitch){
 		burstTimeGuess = 1/lambda;
 		this.alpha = alpha;
-		arrivalTime = -1*Math.log(1-randomValues[0])/lambda;
-		numCPUBurst = (int)(randomValues[1]*100);
+		arrivalTime = -1*Math.log(randomValues[0])/lambda;
+		numCPUBurst = 2;//(int)(randomValues[1]*100);
 		numCPUBurstRecord = numCPUBurst;
 		if(numCPUBurst==0) {
 			state="COMPLETE";
 		}
 		else
 			state = "NOT ARRIVE";
-		cpuBurstTime = -1*Math.log(1-randomValues[2])/lambda;
+		cpuBurstTime = -1*Math.log(randomValues[2])/lambda;
 		remainingTime = cpuBurstTime;
-		ioBurstTime = -1*Math.log(1-randomValues[3])/lambda;
+		ioBurstTime = -1*Math.log(randomValues[3])/lambda;
 		processID = id;	
 		waitTime = new double[numCPUBurst];
 		turnaroundTime = new double [numCPUBurst];
@@ -95,7 +95,7 @@ class Process{
 			state="BLOCKED";
 			remainingTime = cpuBurstTime;
 			arrivalTime = ioBurstTime+time;
-			burstTimeGuess = alpha*burstTimeGuess+(1-alpha)*turnaroundTime[numCPUBurst];
+			burstTimeGuess = (1-alpha)*burstTimeGuess+alpha*cpuBurstTime;
 		}
 		else {
 			state="COMPLETE";
@@ -145,6 +145,8 @@ class Process{
 		sb.append("CPU Burst Time: "+cpuBurstTime+"\n");
 		sb.append("I/O Burst Time: "+ioBurstTime+"\n");
 		sb.append("Time Guess: " + burstTimeGuess+"\n");
+		sb.append("Number of Preemptions: " + numPreempt + "\n");
+		sb.append("Number of CW:" + numContextSwitch + "\n");
 		sb.append("Waiting Time: ");
 		for(int i =numCPUBurstRecord-1;i>=0;i--) {
 			sb.append(waitTime[i]+" ");
