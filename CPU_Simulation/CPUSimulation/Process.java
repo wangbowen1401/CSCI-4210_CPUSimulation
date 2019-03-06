@@ -28,6 +28,7 @@ class Process{
 	double enterTime; // When the process enter ready queue or cpu
 	double burstTimeGuess;
 	int numCPUBurst;
+	int numCPUBurstRecord;
 	double cpuBurstTime;
 	double remainingTime;
 	double ioBurstTime;
@@ -43,7 +44,8 @@ class Process{
 		burstTimeGuess = 1/lambda;
 		this.alpha = alpha;
 		arrivalTime = -1*Math.log(1-randomValues[0])/lambda;
-		numCPUBurst = 2;//(int)(randomValues[1]*100);
+		numCPUBurst = (int)(randomValues[1]*100);
+		numCPUBurstRecord = numCPUBurst;
 		if(numCPUBurst==0) {
 			state="COMPLETE";
 		}
@@ -76,11 +78,12 @@ class Process{
 	}
 	
 	public void SRTEnterQueue(double time) {
-		if(state == "RUNNING")
+		if(state == "RUNNING"&&enterTime!=-1) {
 			remainingTime -=(time-enterTime); 
+			numPreempt++;
+			numContextSwitch++;
+		}
 		state= "READY";
-		numPreempt++;
-		numContextSwitch++;
 		enterTime = time;
 	}
 	
@@ -141,15 +144,15 @@ class Process{
 		sb.append("# of CPU Bursts: "+numCPUBurst+"\n");
 		sb.append("CPU Burst Time: "+cpuBurstTime+"\n");
 		sb.append("I/O Burst Time: "+ioBurstTime+"\n");
+		sb.append("Time Guess: " + burstTimeGuess+"\n");
 		sb.append("Waiting Time: ");
-		for(int i =0;i<2;i++) {
+		for(int i =numCPUBurstRecord-1;i>=0;i--) {
 			sb.append(waitTime[i]+" ");
 		}
 		sb.append("\nTurnaround Time: ");
-		for(int i =0;i<2;i++) {
+		for(int i =numCPUBurstRecord-1;i>=0;i--) {
 			sb.append(turnaroundTime[i]+" ");
 		}
-		sb.append("\n");
 		
 		return sb.toString();
 	}

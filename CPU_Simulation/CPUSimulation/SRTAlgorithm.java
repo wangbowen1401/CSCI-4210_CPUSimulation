@@ -60,17 +60,16 @@ public class SRTAlgorithm{
 		Process p = arrival.poll();
 		double count = p.getArrivalTime();
 		while(!arrival.isEmpty()||!pq.isEmpty()||p.getNumBurst()!=0) {
-			System.out.println(count);
-			System.out.println(p);
 			// Add all the process with the same arrival time
 			while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) 
 				pq.add(arrival.poll());
 			
 			// The process enters CPU
-			p.SRTEnterCPU(count);
+			if(p.getState()!="RUNNING")
+				p.SRTEnterCPU(count);
 			
 			// Check all three time from CPU, ready queue, and arrival queue
-			double running = p.getRemainingTime()+count;
+			double running = p.getRemainingTime()+p.getEnterTime();
 			double in =Integer.MAX_VALUE;
 			if(arrival.size()>0)
 				in =  arrival.peek().getArrivalTime();
@@ -78,6 +77,7 @@ public class SRTAlgorithm{
 			// The current process will finish before the new process, just 
 			// finish and deal with context switch
 			if(count==running) {
+				//System.out.println("Completing CPU Process");
 				p.SRTComplete(count);
 				if(p.getState()!="COMPLETE") {
 					p.resetEnterTime();
@@ -94,20 +94,28 @@ public class SRTAlgorithm{
 				}
 			}
 			else { // new process arrives before the current process finish
-				p.remainingTime = p.getRemainingTime()-(count-p.getEnterTime());
+				double remain = p.getRemainingTime()-(count-p.getEnterTime());
 				// A preemption is needed
-				if(arrival.peek().getTimeGuess()<p.remainingTime) {
+				if(arrival.peek().getTimeGuess()<remain) {
+					//System.out.println("Preempting CPU Process " + "remainTime: "+remain);
 					p.SRTEnterQueue(count);
 					pq.add(p);
 					p=arrival.poll();
 					p.SRTEnterCPU(count);
 				}
 				// The new process will not cause preemption, so just add it to the queue
-				else
-					pq.add(arrival.poll());
+				else {
+					Process newProcess = arrival.poll();
+					//System.out.println("Adding Process "+ newProcess.getProcessID()+" to Ready Queue ");
+					newProcess.SRTEnterQueue(count);
+					pq.add(newProcess);
+				}
 			}
 		}
-
+		for(Process a:done) {
+			System.out.println(a);
+			System.out.println("\n");
+		}
 	}
 	
 	
