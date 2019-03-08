@@ -8,6 +8,8 @@ import java.lang.Math;
 
 public class RRAlgorithm
 {
+	private PriorityQueue<RRProcess> arrival;
+	private ArrayList<RRProcess> done;
     
 	public RRAlgorithm(RandomSequence sequence,double alpha,double cw)
 	{

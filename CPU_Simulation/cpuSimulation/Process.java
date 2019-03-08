@@ -2,23 +2,7 @@ package cpuSimulation;
 import java.util.Arrays;
 import java.util.Comparator;
 
-class ArrivalComparator implements Comparator<Process>{
-	@Override
-	public int compare(Process a,Process b) {
-		if (a.arrivalTime!=b.arrivalTime)
-			return (int)(a.arrivalTime-b.arrivalTime);
-		else {
-			if(a.getState()=="BLOCKED"&&b.getState()=="BLOCKED") {
-				return a.getProcessID()<b.getProcessID()?-1:1;
-			}
-			else if(a.getState()=="BLOCKED")
-				return -1;
-		}
-		return a.getProcessID()<b.getProcessID()?-1:1;
-	}
-}
-
-abstract class Process{
+public abstract class Process{
 	final char processID;
 	final double alpha;
 	final double cw;
@@ -40,7 +24,7 @@ abstract class Process{
 	
 	
 	// Need getters and setters for changing variables
-	Process(char id,double [] randomValues,double lambda,double alpha,double contextSwitch){
+	protected Process(char id,double [] randomValues,double lambda,double alpha,double contextSwitch){
 		burstTimeGuess = 1/lambda;
 		this.alpha = alpha;
 		arrivalTime = -1*Math.log(randomValues[0])/lambda;
@@ -55,8 +39,8 @@ abstract class Process{
 		remainingTime = cpuBurstTime;
 		ioBurstTime = -1*Math.log(randomValues[3])/lambda;
 		processID = id;	
-		waitTime = new double[numCPUBurst];
-		turnaroundTime = new double [numCPUBurst];
+		waitTime = new double[numCPUBurstRecord];
+		turnaroundTime = new double [numCPUBurstRecord];
 		//Arrays.fill(turnaroundTime, contextSwitch); //Add when we consider context switch
 		Arrays.fill(waitTime, 0);
 		Arrays.fill(turnaroundTime, cpuBurstTime);
@@ -93,6 +77,10 @@ abstract class Process{
 	
 	public int getNumBurst() {
 		return numCPUBurst;
+	}
+	
+	public double getCPUBurstTime() {
+		return cpuBurstTime;
 	}
 	
 	public void resetEnterTime() {

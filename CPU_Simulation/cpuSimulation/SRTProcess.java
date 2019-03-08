@@ -1,36 +1,51 @@
 package cpuSimulation;
 
+import java.util.Comparator;
+
+class ArrivalComparator implements Comparator<Process>{
+	@Override
+	public int compare(Process a,Process b) {
+		if (a.arrivalTime!=b.arrivalTime)
+			return (int)(a.arrivalTime-b.arrivalTime);
+		else {
+			if(a.getState()=="BLOCKED"&&b.getState()=="BLOCKED") {
+				return a.getProcessID()<b.getProcessID()?-1:1;
+			}
+			else if(a.getState()=="BLOCKED")
+				return -1;
+		}
+		return a.getProcessID()<b.getProcessID()?-1:1;
+	}
+}
+
 public class SRTProcess extends Process {
 
 	public SRTProcess(char id, double[] randomValues, double lambda, double alpha, double contextSwitch) {
 		super(id, randomValues, lambda, alpha, contextSwitch);
-		
 	}
 	
-	/////////////////////////////////// SRT ////////////////////////////////////////////
-	/**  Need to consider context switch **/
-	public void SRTEnterCPU(double time) {
+	public void enterCPU(double time) {
 		state= "RUNNING";
 		if(enterTime!=-1)
 			waitTime[numCPUBurst-1]+=time-enterTime;
 		enterTime = time;// Refers to when the process enter the CPU
 	}
 	
-	public void SRTEnterQueue(double time) {
+	public void enterQueue(double time) {
 		if(state == "RUNNING"&&enterTime!=-1) {
 			remainingTime -=(time-enterTime); 
-			numPreempt++;
 			numContextSwitch++;
+			numPreempt++;
 		}
 		state= "READY";
 		enterTime = time;
 	}
 	
 	// For SRT when CPU burst is complete
-	public void SRTComplete(double time) {
+	public void complete(double time) {
 		numCPUBurst--;
 		turnaroundTime[numCPUBurst]+=waitTime[numCPUBurst];
-		if(numCPUBurst!=0) {
+		if(numCPUBurst>0) {
 			state="BLOCKED";
 			remainingTime = cpuBurstTime;
 			arrivalTime = ioBurstTime+time;

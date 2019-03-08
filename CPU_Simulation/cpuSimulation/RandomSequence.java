@@ -34,8 +34,7 @@ class RandomSequence{
 	//In case the class is not needed anymore
 	//public void random(double seed,double lambda,double upper,int n)
 	public void random(){
-		Random randomGenerator = new Random();
-		randomGenerator.setSeed(seed);
+		Random randomGenerator = new Random(seed);
 		for(int i=0;i<4*n;i++) {
 			double randomValue = -1*Math.log(1-randomGenerator.nextDouble()%1)/lambda;
 			if(randomValue<upper)
