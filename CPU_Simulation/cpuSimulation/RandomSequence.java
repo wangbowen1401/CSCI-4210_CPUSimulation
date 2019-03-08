@@ -1,4 +1,4 @@
-package CPUSimulation;
+package cpuSimulation;
 
 import java.util.Random;
 /*

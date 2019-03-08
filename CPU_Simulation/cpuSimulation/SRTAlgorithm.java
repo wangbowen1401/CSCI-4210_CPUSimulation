@@ -1,4 +1,4 @@
-package CPUSimulation;
+package cpuSimulation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,46 +9,46 @@ import java.lang.Math;
 
 // Basically wants a queue that orders by remaining time and the order the items
 //  are inserted
-class SRTComparator implements Comparator<Process>{
+class SRTComparator implements Comparator<SRTProcess>{
 	@Override
-	public int compare(Process p1, Process p2) {
+	public int compare(SRTProcess p1, SRTProcess p2) {
         return (int)Math.ceil(p1.getRemainingTime()-p2.getRemainingTime());
     }
 }
 
 public class SRTAlgorithm{
-	private PriorityQueue<Process> arrival;
-	private ArrayList<Process> done;
+	private PriorityQueue<SRTProcess> arrival;
+	private ArrayList<SRTProcess> done;
 	
 	public SRTAlgorithm(RandomSequence sequence,double alpha,double cw) {
-		arrival = new PriorityQueue<Process>(new ArrivalComparator());
+		arrival = new PriorityQueue<SRTProcess>(new ArrivalComparator());
 		double [] values = sequence.getSequence();
 		char id = 'a';
 		for(int i=0;i<sequence.size();i+=4) {
-			Process p = new Process(id,Arrays.copyOfRange(values, i, i+4),sequence.getLambda(),alpha,cw);
+			SRTProcess p = new SRTProcess(id,Arrays.copyOfRange(values, i, i+4),sequence.getLambda(),alpha,cw);
 			id++;
 			arrival.add(p);
 		}
-		done = new ArrayList<Process>();	
+		done = new ArrayList<SRTProcess>();	
 	}
 	/* Pseudocode
-	 * 1. Add a process from arrival queue
+	 * 1. Add a SRTProcess from arrival queue
 	 * 2. Check if any other arrival time is the same (No context switch time)
-	 * 3. Context switch the process into CPU
-	 * 4. Set count to the min of arrival time of next process or remainingTime + time 
+	 * 3. Context switch the SRTProcess into CPU
+	 * 4. Set count to the min of arrival time of next SRTProcess or remainingTime + time 
 	 * 		of current progress.
 	 * 5. Case 1
-	 * 		The new process has a shorter burst time guess than remainingTime
-	 * 				a. Check for context completion at time of process arrival
+	 * 		The new SRTProcess has a shorter burst time guess than remainingTime
+	 * 				a. Check for context completion at time of SRTProcess arrival
 	 * 					If complete
-	 * 						1. Send process back for I/O burst if numCPUBurst !=0
+	 * 						1. Send SRTProcess back for I/O burst if numCPUBurst !=0
 	 * 					Else 
 	 * 						2. Record enter time = time + cw
 	 * 						3. Set state to running
-	 * 				b. Context switch the two process
+	 * 				b. Context switch the two SRTProcess
 	 * 	  Case 2
-	 * 		The new process has a longer burst time guess than remainingTime,
-	 * 			insert the process into the ready queue. 
+	 * 		The new SRTProcess has a longer burst time guess than remainingTime,
+	 * 			insert the SRTProcess into the ready queue. 
 	 * 				a. set enter time, change state, 
 	 * 		
 	 * 		
@@ -56,32 +56,36 @@ public class SRTAlgorithm{
 	public void simulate() {
 		if(arrival.size()==0)
 			return;
-		PriorityQueue<Process> pq = new PriorityQueue<Process>(new SRTComparator());
-		Process p = arrival.poll();
+		PriorityQueue<SRTProcess> pq = new PriorityQueue<SRTProcess>(new SRTComparator());
+		SRTProcess p = arrival.poll();
 		double count = p.getArrivalTime();
 		while(!arrival.isEmpty()||!pq.isEmpty()||p.getNumBurst()!=0) {
-			// Add all the process with the same arrival time
-			while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) 
-				pq.add(arrival.poll());
+			// Add all the SRTProcess with the same arrival time
+			SRTProcess newProcess;
+			while(arrival.size()>0&&count==arrival.peek().getArrivalTime()) { 
+				newProcess = arrival.poll();
+				newProcess.SRTEnterQueue(count);
+				
+			}
 			
-			// The process enters CPU
+			// The SRTProcess enters CPU
 			if(p.getState()!="RUNNING") {
 				count+=p.cw/2;
 				p.SRTEnterCPU(count);
 			}
 			
-			// Check the next process arrival time vs remaining time of current process
+			// Check the next SRTProcess arrival time vs remaining time of current SRTProcess
 			double running = p.getRemainingTime()+p.getEnterTime();
 			double in =Integer.MAX_VALUE;
 			if(arrival.size()>0)
 				in =  arrival.peek().getArrivalTime();
 			count = Math.min(running, in);
 			
-			// The current process will finish before the new process, just 
+			// The current SRTProcess will finish before the new SRTProcess, just 
 			// finish and deal with context switch
 			if(count==running) {
-				//System.out.println("Completing CPU Process");
-				count+=p.cw/2; // Add context switch to move the process out
+				//System.out.println("Completing CPU SRTProcess");
+				count+=p.cw/2; // Add context switch to move the SRTProcess out
 				p.SRTComplete(count);
 				// Still more cpu bursts left
 				if(p.getState()!="COMPLETE") {
@@ -91,7 +95,7 @@ public class SRTAlgorithm{
 				// Completed all the cpu and io bursts, added to arrayList for analysis
 				else
 					done.add(p);
-				// Move onto the next process in the ready queue because new process didn't arrive yet.
+				// Move onto the next SRTProcess in the ready queue because new SRTProcess didn't arrive yet.
 				if(pq.size()!=0&&running!=in) {
 					p = pq.poll();
 				}
@@ -100,20 +104,20 @@ public class SRTAlgorithm{
 					count = p.getArrivalTime();
 				}
 			}
-			else { // new process arrives before the current process finish
+			else { // new SRTProcess arrives before the current SRTProcess finish
 				double remain = p.getRemainingTime()-(count-p.getEnterTime()); 
 				// A preemption is needed
 				if(arrival.peek().getTimeGuess()<remain) {
-					//System.out.println("Preempting CPU Process " + "remainTime: "+remain);
+					//System.out.println("Preempting CPU SRTProcess " + "remainTime: "+remain);
 					count+=p.cw/2;
 					p.SRTEnterQueue(count);
 					pq.add(p);
 					p=arrival.poll();
 				}
-				// The new process will not cause preemption, so just add it to the queue
+				// The new SRTProcess will not cause preemption, so just add it to the queue
 				else {
-					Process newProcess = arrival.poll();
-					//System.out.println("Adding Process "+ newProcess.getProcessID()+" to Ready Queue ");
+					newProcess = arrival.poll();
+					//System.out.println("Adding SRTProcess "+ newSRTProcess.getSRTProcessID()+" to Ready Queue ");
 					newProcess.SRTEnterQueue(count);
 					pq.add(newProcess);
 				}

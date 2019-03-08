@@ -1,4 +1,4 @@
-package CPUSimulation;
+package cpuSimulation;
 
 
 public class Project1{
