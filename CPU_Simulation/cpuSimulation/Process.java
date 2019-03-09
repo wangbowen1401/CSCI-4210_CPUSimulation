@@ -1,6 +1,5 @@
 package cpuSimulation;
 import java.util.Arrays;
-import java.util.Comparator;
 
 public abstract class Process{
 	final char processID;
@@ -8,7 +7,7 @@ public abstract class Process{
 	final double cw;
 	
 	String state;
-	double arrivalTime;
+    double arrivalTime;
 	double enterTime; // When the process enter ready queue or cpu
 	double burstTimeGuess;
 	int numCPUBurst;
@@ -49,10 +48,22 @@ public abstract class Process{
 		numContextSwitch=0;
 		cw = contextSwitch;
 	}
+	public abstract void enterQueue(double time);
+	public abstract void enterCPU(double time);
+	public abstract void complete(double time);
+	
 	
 	///////////////////////////////// Getters and Setters/////////////////////////////////
 	public char getProcessID() {
 		return processID;
+	}
+	
+	public double[] getTurnaroundTime() {
+		return Arrays.copyOf(turnaroundTime,turnaroundTime.length);
+	}
+	
+	public int getNumCPUBurstRecord() {
+		return numCPUBurstRecord;
 	}
 	
 	public double getTimeGuess() {
@@ -85,6 +96,14 @@ public abstract class Process{
 	
 	public void resetEnterTime() {
 		enterTime=-1;
+	}
+	
+	public int getNumPreempt() {
+		return numPreempt;
+	}
+	
+	public int getNumContextSwitch() {
+		return numContextSwitch;
 	}
 	// String to show all the data
 	@Override

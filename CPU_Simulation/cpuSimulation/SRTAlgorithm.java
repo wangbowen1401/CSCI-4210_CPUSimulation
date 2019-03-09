@@ -135,8 +135,8 @@ public class SRTAlgorithm{
 		double total = 0;
 		int entries=0;
 		for(Process p : done) {
-			entries = p.numCPUBurstRecord;
-			total += p.getCPUBurstTime()*p.numCPUBurstRecord;;
+			entries = p.getNumCPUBurstRecord();
+			total += p.getCPUBurstTime()*p.getNumCPUBurstRecord();
 		}
 		return total/entries;
 	}
@@ -145,7 +145,7 @@ public class SRTAlgorithm{
 		double total = 0;
 		int entries=0;
 		for(Process p : done) {
-			entries = p.numCPUBurstRecord;
+			entries = p.getNumCPUBurstRecord();
 			for(double w:p.waitTime)
 				total+=w;
 		}
@@ -156,8 +156,8 @@ public class SRTAlgorithm{
 		double total = 0;
 		int entries=0;
 		for(Process p : done) {
-			entries = p.numCPUBurstRecord;
-			for(double w:p.turnaroundTime)
+			entries = p.getNumCPUBurstRecord();
+			for(double w:p.getTurnaroundTime())
 				total+=w;
 		}
 		return total/entries;
@@ -166,7 +166,7 @@ public class SRTAlgorithm{
 	private int getTotalCW() {
 		int total = 0;
 		for(Process p : done) {
-			total+=p.numContextSwitch;
+			total+=p.getNumContextSwitch();
 		}
 		return total;
 	}
@@ -174,7 +174,7 @@ public class SRTAlgorithm{
 	private int getTotalPreempt() {
 		int total = 0;
 		for(Process p : done) {
-			total+=p.numPreempt;
+			total+=p.getNumPreempt();
 		}
 		return total;
 	}
