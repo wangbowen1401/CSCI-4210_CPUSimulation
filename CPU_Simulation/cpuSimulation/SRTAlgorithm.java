@@ -1,6 +1,7 @@
 package cpuSimulation;
 
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -57,6 +58,7 @@ public class SRTAlgorithm{
 	 * 		
 	 */
 	public void simulate() {
+
 		if(arrival.size()==0)
 			return;
 		PriorityQueue<SRTProcess> pq = new PriorityQueue<SRTProcess>(new SRTComparator());
