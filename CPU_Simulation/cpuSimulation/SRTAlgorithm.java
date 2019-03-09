@@ -13,7 +13,7 @@ import cpuSimulation.ArrivalComparator;
 class SRTComparator implements Comparator<SRTProcess>{
 	@Override
 	public int compare(SRTProcess p1, SRTProcess p2) {
-        return (int)Math.ceil(p1.getRemainingTime()-p2.getRemainingTime());
+        return (int)Math.ceil(p1.getTimeGuess()-p2.getTimeGuess());
     }
 }
 
