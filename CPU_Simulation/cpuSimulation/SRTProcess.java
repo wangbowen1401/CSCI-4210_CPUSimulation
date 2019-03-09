@@ -5,8 +5,8 @@ import java.util.Comparator;
 class ArrivalComparator implements Comparator<Process>{
 	@Override
 	public int compare(Process a,Process b) {
-		if (a.arrivalTime!=b.arrivalTime)
-			return (int)(a.arrivalTime-b.arrivalTime);
+		if (a.getArrivalTime()!=b.getArrivalTime())
+			return (int)(a.getArrivalTime()-b.getArrivalTime());
 		else {
 			if(a.getState()=="BLOCKED"&&b.getState()=="BLOCKED") {
 				return a.getProcessID()<b.getProcessID()?-1:1;
@@ -25,7 +25,7 @@ public class SRTProcess extends Process {
 	}
 	
 	public void enterCPU(double time) {
-		state= "RUNNING";
+		this.state= "RUNNING";
 		if(enterTime!=-1)
 			waitTime[numCPUBurst-1]+=time-enterTime;
 		enterTime = time;// Refers to when the process enter the CPU
