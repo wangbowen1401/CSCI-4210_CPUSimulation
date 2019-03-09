@@ -9,14 +9,15 @@ import java.util.Random;
  */
 class RandomSequence{
 	private final double[] sequence;
-	private final long seed;
-	private final double lambda;
+	private long seed;
+ 	private final double lambda;
 	private final double upper;
 	private final int n;
 	
 	RandomSequence(long seed,double lambda,double upper,int n){
 		sequence = new double[4*n];
-		this.seed = seed;
+		this.seed = seed << 16;
+		this.seed = this.seed + 13070;
 		this.lambda = lambda;
 		this.upper = upper;
 		this.n = n;
@@ -34,6 +35,20 @@ class RandomSequence{
 	//In case the class is not needed anymore
 	//public void random(double seed,double lambda,double upper,int n)
 	public void random(){
+		
+		for(int i=0;i<4*n;i++)
+		{
+			this.seed = ((this.seed*25214903917)+11)%(2**48);
+			double rand = this.seed/(2**48);
+			double randomValue = -1*Math.log(1-rand%1)/lambda;
+			if(randomValue<upper)
+				sequence[i]=randomValue%1;
+			else
+				i--;
+
+		}
+		
+		/*
 		Random randomGenerator = new Random(seed);
 		for(int i=0;i<4*n;i++) {
 			double randomValue = -1*Math.log(1-randomGenerator.nextDouble()%1)/lambda;
@@ -42,6 +57,7 @@ class RandomSequence{
 			else
 				i--;
 		}
+		*/
 	}
 	
 	public int size() {
