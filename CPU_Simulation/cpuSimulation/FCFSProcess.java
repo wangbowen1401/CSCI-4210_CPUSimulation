@@ -7,19 +7,35 @@ class FCFSProcess extends Process {
 	}
 	
 	public void enterQueue(double time){
-		
+		this.state= "RUNNING";
+		if(enterTime!=-1)
+			waitTime[numCPUBurst-1]+=time-enterTime;
+		enterTime = time;// Refers to when the process enter the CP
 	}
 
 	@Override
 	public void enterCPU(double time) {
-		// TODO Auto-generated method stub
-		
+		if(state == "RUNNING"&&enterTime!=-1) {
+			remainingTime -=(time-enterTime); 
+			numContextSwitch++;
+			numPreempt++;
+		}
+		state= "READY";
+		enterTime = time;
 	}
 
 	@Override
 	public void complete(double time) {
-		// TODO Auto-generated method stub
-		
+		numCPUBurst--;
+		turnaroundTime[numCPUBurst]+=waitTime[numCPUBurst];
+		if(numCPUBurst>0) {
+			state="BLOCKED";
+			remainingTime = cpuBurstTime;
+			arrivalTime = ioBurstTime+time;
+		}
+		else 
+			state="COMPLETE";
+		numContextSwitch++;
 	}
 
 }

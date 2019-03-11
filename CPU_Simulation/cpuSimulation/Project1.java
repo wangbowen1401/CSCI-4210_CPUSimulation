@@ -14,9 +14,11 @@ public class Project1{
 		SRTAlgorithm SRT = new SRTAlgorithm(test,alpha,cw);
 		SRT.simulate();
 		System.out.println(SRT);
+		FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
+		FCFS.simulate();
+		System.out.println(FCFS);
 		SJFAlgorithm SJF = new SJFAlgorithm(test, alpha, cw);
 		SJF.simulate();
-		
 		System.out.println(SJF);
 		
 	}
