@@ -1,11 +1,9 @@
 package cpuSimulation;
 
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
-
 import cpuSimulation.ArrivalComparator;
 
 
@@ -31,8 +29,6 @@ public class SRTAlgorithm{
 			id++;
 			arrival.add(p);
 		}
-		for(Process p:arrival)
-			System.out.println(p+"\n");
 		done = new ArrayList<SRTProcess>();	
 	}
 	/* Pseudocode
@@ -58,7 +54,6 @@ public class SRTAlgorithm{
 	 * 		
 	 */
 	public void simulate() {
-
 		if(arrival.size()==0)
 			return;
 		PriorityQueue<SRTProcess> pq = new PriorityQueue<SRTProcess>(new SRTComparator());
@@ -145,7 +140,7 @@ public class SRTAlgorithm{
 		double total = 0;
 		int entries=0;
 		for(Process p : done) {
-			entries = p.getNumCPUBurstRecord();
+			entries += p.getNumCPUBurstRecord();
 			for(double w:p.waitTime)
 				total+=w;
 		}
@@ -156,7 +151,7 @@ public class SRTAlgorithm{
 		double total = 0;
 		int entries=0;
 		for(Process p : done) {
-			entries = p.getNumCPUBurstRecord();
+			entries += p.getNumCPUBurstRecord();
 			for(double w:p.getTurnaroundTime())
 				total+=w;
 		}
@@ -185,7 +180,7 @@ public class SRTAlgorithm{
 		StringBuilder sb = new StringBuilder();
 		
 		// Actual content
-		sb.append("Algorithm SRT\n");
+		sb.append("Algorithm FCFS\n");
 		
 		// Values that need to be calculated
 		double avgCPUBurst = this.getAvgCPUBurst();
@@ -204,9 +199,6 @@ public class SRTAlgorithm{
 		sb.append("-- total number of context switches: "+ numCW);
 		sb.append("\n");
 		sb.append("-- total number of preemptions: "+ numPreempt);
-		return sb.toString();
-		
-	}
-	
-	
+		return sb.toString();	
+	}	
 }

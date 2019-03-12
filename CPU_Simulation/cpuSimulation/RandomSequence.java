@@ -1,6 +1,5 @@
 package cpuSimulation;
 
-import java.util.Random;
 /*
  * A RandomSequence class which will generate 4*n random doubles using the exponential distribution algorithm. 
  * The code might be removed to be implemented in other classes, but for now, it will stay in a isolated class
@@ -9,14 +8,15 @@ import java.util.Random;
  */
 class RandomSequence{
 	private final double[] sequence;
-	private final long seed;
-	private final double lambda;
+	private double seed;
+ 	private final double lambda;
 	private final double upper;
 	private final int n;
 	
 	RandomSequence(long seed,double lambda,double upper,int n){
 		sequence = new double[4*n];
-		this.seed = seed;
+		this.seed = seed << 16;
+		this.seed = this.seed + 13070;
 		this.lambda = lambda;
 		this.upper = upper;
 		this.n = n;
@@ -34,11 +34,14 @@ class RandomSequence{
 	//In case the class is not needed anymore
 	//public void random(double seed,double lambda,double upper,int n)
 	public void random(){
-		Random randomGenerator = new Random(seed);
-		for(int i=0;i<4*n;i++) {
-			double randomValue = -1*Math.log(1-randomGenerator.nextDouble()%1)/lambda;
+		
+		for(int i=0;i<4*n;i++)
+		{
+			this.seed = ((this.seed*25214903917L)+11)%(Math.pow(2, 48));
+			double rand = this.seed/(Math.pow(2,48));
+			double randomValue = -1*Math.log(1-rand%1)/lambda;
 			if(randomValue<upper)
-				sequence[i]=randomGenerator.nextDouble()%1;
+				sequence[i]=randomValue%1;
 			else
 				i--;
 		}
