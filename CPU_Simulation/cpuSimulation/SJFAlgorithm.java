@@ -10,7 +10,6 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 import cpuSimulation.ArrivalComparator;
-import sun.java2d.Disposer.PollDisposable;
 
 
 // Basically wants a queue that orders by remaining time and the order the items
