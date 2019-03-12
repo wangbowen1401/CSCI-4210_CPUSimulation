@@ -180,7 +180,7 @@ public class SRTAlgorithm{
 		StringBuilder sb = new StringBuilder();
 		
 		// Actual content
-		sb.append("Algorithm FCFS\n");
+		sb.append("Algorithm SRT\n");
 		
 		// Values that need to be calculated
 		double avgCPUBurst = this.getAvgCPUBurst();
