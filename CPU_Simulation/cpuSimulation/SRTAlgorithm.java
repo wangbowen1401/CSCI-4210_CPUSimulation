@@ -3,41 +3,30 @@ package cpuSimulation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.PriorityQueue;
-import cpuSimulation.ArrivalComparator;
 
-
-// Basically wants a queue that orders by remaining time and the order the items
-//  are inserted
-class ArrivalComparator implements Comparator<Process>{
-	@Override
-	public int compare(Process a,Process b) {
-		if (a.getArrivalTime()!=b.getArrivalTime())
-			return (int)(a.getArrivalTime()-b.getArrivalTime());
-		else {
-			if(a.getState()=="BLOCKED"&&b.getState()=="BLOCKED") {
-				return a.getProcessID()<b.getProcessID()?-1:1;
-			}
-			else if(a.getState()=="BLOCKED")
-				return -1;
-		}
-		return a.getProcessID()<b.getProcessID()?-1:1;
-	}
+class SRTComparator implements Comparator<Process>{
+	public int compare(Process p1, Process p2) {
+        return (int)Math.ceil(p1.getTimeGuess()-p2.getTimeGuess());
+    }
 }
 
 public class SRTAlgorithm{
 	private PriorityQueue<Process> arrival;
 	private ArrayList<Process> done;
+	private double cw;
 	
 	public SRTAlgorithm(RandomSequence test,double alpha,double cw) {
 		arrival = new PriorityQueue<Process>(new ArrivalComparator());
 		double [] values = test.getSequence();
 		char id = 'a';
 		for(int i=0;i<test.size();i+=4) {
-			Process p = new Process(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha,cw);
+			Process p = new Process(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha);
 			id++;
 			arrival.add(p);
 		}
+		this.cw=cw;
 		done = new ArrayList<Process>();	
 	}
 	/* Pseudocode
@@ -58,28 +47,28 @@ public class SRTAlgorithm{
 	 * 	  Case 2
 	 * 		The new SRTProcess has a longer burst time guess than remainingTime,
 	 * 			insert the SRTProcess into the ready queue. 
-	 * 				a. set enter time, change state, 
-	 * 		
-	 * 		
+	 * 				a. set enter time, change state
 	 */
 	public void simulate() {
-		if(arrival.size()==0)
+		if(arrival.size()==0) {
+			System.out.println("time <0>ms: Simulator ended for <SRT> [Q empty]");
 			return;
-		PriorityQueue<Process> pq = new PriorityQueue<Process>(new ProcessComparator());
+		}
+		PriorityQueue<Process> pq = new PriorityQueue<Process>(new SRTComparator());
 		Process p = arrival.poll();
-		double count = p.getArrivalTime();
-		while(!arrival.isEmpty()||!pq.isEmpty()||p.getNumBurst()!=0) {
+		double count = p.getArrivalTime()+cw/2;
+		while(!arrival.isEmpty()||!pq.isEmpty()) {
 			// Add all the SRTProcess with the same arrival time
+			printQueueContents(pq);
 			Process newProcess;
-			while(arrival.size()>0&&count==arrival.peek().getArrivalTime()) { 
+			while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) { 
 				newProcess = arrival.poll();
-				newProcess.enterQueue(count);
-				
+				newProcess.enterQueue(newProcess.getArrivalTime());
 			}
 			
 			// The SRTProcess enters CPU
 			if(p.getState()!="RUNNING") {
-				count+=p.cw/2;
+				count+=cw/2;
 				p.enterCPU(count);
 			}
 			
@@ -90,11 +79,10 @@ public class SRTAlgorithm{
 				in =  arrival.peek().getArrivalTime();
 			count = Math.min(running, in);
 			
-			// The current SRTProcess will finish before the new SRTProcess, just 
+			// The current process will finish before the new process, just 
 			// finish and deal with context switch
 			if(count==running) {
-				//System.out.println("Completing CPU SRTProcess");
-				count+=p.cw/2; // Add context switch to move the SRTProcess out
+				count+=cw/2; // Add context switch to move the Process out
 				p.complete(count);
 				// Still more cpu bursts left
 				if(p.getState()!="COMPLETE") {
@@ -118,7 +106,7 @@ public class SRTAlgorithm{
 				// A preemption is needed
 				if(arrival.peek().getTimeGuess()<remain) {
 					//System.out.println("Preempting CPU SRTProcess " + "remainTime: "+remain);
-					count+=p.cw/2;
+					count+=cw/2;
 					p.enterQueue(count);
 					pq.add(p);
 					p=arrival.poll();
@@ -133,6 +121,19 @@ public class SRTAlgorithm{
 			}
 		}
 		System.out.println("time <"+count+">ms: Simulator ended for <SRT> [Q empty]");
+	}
+	
+	private void printQueueContents(PriorityQueue<Process> q){
+		Iterator<Process> itr = q.iterator();
+		System.out.println("Queue Size: " + q.size());
+		System.out.print("Queue Contents: ");
+		while(itr.hasNext()) {
+			Process p = itr.next();
+			System.out.print(p.getProcessID());
+			if(itr.hasNext())
+				System.out.print(",");	
+		}
+		System.out.println();	
 	}
 	
 	private double getAvgCPUBurst() {

@@ -9,16 +9,18 @@ import java.util.Queue;
 public class FCFSAlgorithm {
 	private PriorityQueue<Process> arrival;
 	private ArrayList<Process> done;
+	private double cw;
 	
 	public FCFSAlgorithm(RandomSequence test,double alpha,double cw) {
 		arrival = new PriorityQueue<Process>(new ArrivalComparator());
 		double [] values = test.getSequence();
 		char id = 'a';
 		for(int i=0;i<test.size();i+=4) {
-			Process p = new Process(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha,cw);
+			Process p = new Process(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha);
 			id++;
 			arrival.add(p);
 		}
+		this.cw = cw;
 		done = new ArrayList<Process>();	
 	}
 	
@@ -38,14 +40,16 @@ public class FCFSAlgorithm {
 			
 			// The Process enters CPU
 			if(p.getState()!="RUNNING") {
-				count+=p.cw/2;
+				count+=cw/2;
 				p.enterCPU(count);
 			}
+			
 			double running = p.getRemainingTime()+p.getEnterTime();
 			double in =Integer.MAX_VALUE;
 			if(arrival.size()>0)
 				in =  arrival.peek().getArrivalTime();
 			count = Math.min(running, in);
+			
 			if(count==running) {
 				p.complete(count);
 				// Still more cpu bursts left
