@@ -9,7 +9,6 @@ import java.util.PriorityQueue;
 import cpuSimulation.ArrivalComparator;
 
 
-
 // Basically wants a queue that orders by remaining time and the order the items
 //  are inserted
 class SJFComparator implements Comparator<SRTProcess>{
