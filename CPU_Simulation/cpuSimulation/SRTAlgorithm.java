@@ -9,27 +9,36 @@ import cpuSimulation.ArrivalComparator;
 
 // Basically wants a queue that orders by remaining time and the order the items
 //  are inserted
-class SRTComparator implements Comparator<SRTProcess>{
+class ArrivalComparator implements Comparator<Process>{
 	@Override
-	public int compare(SRTProcess p1, SRTProcess p2) {
-        return (int)Math.ceil(p1.getTimeGuess()-p2.getTimeGuess());
-    }
+	public int compare(Process a,Process b) {
+		if (a.getArrivalTime()!=b.getArrivalTime())
+			return (int)(a.getArrivalTime()-b.getArrivalTime());
+		else {
+			if(a.getState()=="BLOCKED"&&b.getState()=="BLOCKED") {
+				return a.getProcessID()<b.getProcessID()?-1:1;
+			}
+			else if(a.getState()=="BLOCKED")
+				return -1;
+		}
+		return a.getProcessID()<b.getProcessID()?-1:1;
+	}
 }
 
 public class SRTAlgorithm{
-	private PriorityQueue<SRTProcess> arrival;
-	private ArrayList<SRTProcess> done;
+	private PriorityQueue<Process> arrival;
+	private ArrayList<Process> done;
 	
 	public SRTAlgorithm(RandomSequence test,double alpha,double cw) {
-		arrival = new PriorityQueue<SRTProcess>(new ArrivalComparator());
+		arrival = new PriorityQueue<Process>(new ArrivalComparator());
 		double [] values = test.getSequence();
 		char id = 'a';
 		for(int i=0;i<test.size();i+=4) {
-			SRTProcess p = new SRTProcess(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha,cw);
+			Process p = new Process(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha,cw);
 			id++;
 			arrival.add(p);
 		}
-		done = new ArrayList<SRTProcess>();	
+		done = new ArrayList<Process>();	
 	}
 	/* Pseudocode
 	 * 1. Add a SRTProcess from arrival queue
@@ -56,12 +65,12 @@ public class SRTAlgorithm{
 	public void simulate() {
 		if(arrival.size()==0)
 			return;
-		PriorityQueue<SRTProcess> pq = new PriorityQueue<SRTProcess>(new SRTComparator());
-		SRTProcess p = arrival.poll();
+		PriorityQueue<Process> pq = new PriorityQueue<Process>(new ProcessComparator());
+		Process p = arrival.poll();
 		double count = p.getArrivalTime();
 		while(!arrival.isEmpty()||!pq.isEmpty()||p.getNumBurst()!=0) {
 			// Add all the SRTProcess with the same arrival time
-			SRTProcess newProcess;
+			Process newProcess;
 			while(arrival.size()>0&&count==arrival.peek().getArrivalTime()) { 
 				newProcess = arrival.poll();
 				newProcess.enterQueue(count);

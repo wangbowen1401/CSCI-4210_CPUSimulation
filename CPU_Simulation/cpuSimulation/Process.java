@@ -1,5 +1,13 @@
 package cpuSimulation;
 import java.util.Arrays;
+import java.util.Comparator;
+
+class ProcessComparator implements Comparator<Process>{
+	public int compare(Process p1, Process p2) {
+        return (int)Math.ceil(p1.getTimeGuess()-p2.getTimeGuess());
+    }
+}
+
 
 public  class Process{
 	final char processID;
