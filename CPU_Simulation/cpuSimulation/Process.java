@@ -1,10 +1,30 @@
 package cpuSimulation;
 import java.util.Arrays;
+import java.util.Comparator;
+
+//Basically wants a queue that orders by remaining time and the order the items
+//are inserted
+class ArrivalComparator implements Comparator<Process>{
+@Override
+public int compare(Process a,Process b) {
+	if (a.getArrivalTime()!=b.getArrivalTime())
+		return (int)(a.getArrivalTime()-b.getArrivalTime());
+	else {
+		if(a.getState()=="BLOCKED"&&b.getState()=="BLOCKED") {
+			return a.getProcessID()<b.getProcessID()?-1:1;
+		}
+		else if(a.getState()=="BLOCKED")
+			return -1;
+	}
+	return a.getProcessID()<b.getProcessID()?-1:1;
+}
+}
+
+
 
 public  class Process{
 	final char processID;
 	final double alpha;
-	final double cw;
 	
 	String state;
     double arrivalTime;
@@ -23,7 +43,7 @@ public  class Process{
 	
 	
 	// Need getters and setters for changing variables
-	public Process(char id,double [] randomValues,double lambda,double alpha,double contextSwitch){
+	public Process(char id,double [] randomValues,double lambda,double alpha){
 		burstTimeGuess = 1/lambda;
 		this.alpha = alpha;
 		arrivalTime = Math.floor(-1*Math.log(randomValues[0])/lambda);
@@ -40,13 +60,11 @@ public  class Process{
 		processID = id;	
 		waitTime = new double[numCPUBurstRecord];
 		turnaroundTime = new double [numCPUBurstRecord];
-		//Arrays.fill(turnaroundTime, contextSwitch); //Add when we consider context switch
 		Arrays.fill(waitTime, 0);
 		Arrays.fill(turnaroundTime, cpuBurstTime);
 		enterTime = -1;
 		numPreempt = 0;
 		numContextSwitch=0;
-		cw = contextSwitch;
 	}
 
 	

@@ -23,18 +23,18 @@ public class SJFAlgorithm {
 	PriorityQueue<Process> Q;
 	private PriorityQueue<Process> arrivalQueue;
 	private ArrayList<Process> completedProcesses;
+	private double cw;
 	
 	public SJFAlgorithm(RandomSequence test,double alpha,double cw) {
 		arrivalQueue = new PriorityQueue<Process>(new ArrivalComparator());
 		double [] values = test.getSequence();
 		char id = 'A';
 		for(int i=0;i<test.size();i+=4) {
-			Process currentProcess = new Process(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha,cw);
+			Process currentProcess = new Process(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha);
 			id++;
 			arrivalQueue.add(currentProcess);
 		}
-//		for(Process currentProcess:arrivalQueue)
-//			System.out.println(currentProcess+"\n");
+		this.cw=cw;
 		completedProcesses = new ArrayList<Process>();	
 	}
 	
@@ -60,7 +60,7 @@ public class SJFAlgorithm {
 			}
 			
 			if(currentProcess.getState()!="RUNNING") {
-				count+=currentProcess.cw/2;
+				count+=cw/2;
 				currentProcess.enterCPU(count);
 			}
 			
@@ -71,7 +71,7 @@ public class SJFAlgorithm {
 			count = Math.min(running, in);
 
 			if(count==running) {
-				count+=currentProcess.cw/2;
+				count+=cw/2;
 				currentProcess.complete(count);
 				if(currentProcess.getState()!="COMPLETE") {
 					currentProcess.resetEnterTime();
@@ -88,7 +88,6 @@ public class SJFAlgorithm {
 				}
 			}
 			else {
-				
 				newProcess = arrivalQueue.poll();
 				newProcess.enterQueue(count);
 				Q.add(newProcess);
@@ -96,7 +95,6 @@ public class SJFAlgorithm {
 			}
 		}
 		System.out.println("time <"+count+">ms: Simulator ended for <SJF> [Q empty]");
-		
 	}
 	
 	
@@ -186,7 +184,6 @@ public class SJFAlgorithm {
 		sb.append("\n");
 		sb.append("-- total number of preemptions: "+ numPreempt);
 		return sb.toString();
-		
 	}
 }
 
