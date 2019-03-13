@@ -1,7 +1,7 @@
 package cpuSimulation;
 import java.util.Arrays;
 
-public abstract class Process{
+public  class Process{
 	final char processID;
 	final double alpha;
 	final double cw;
@@ -23,7 +23,7 @@ public abstract class Process{
 	
 	
 	// Need getters and setters for changing variables
-	protected Process(char id,double [] randomValues,double lambda,double alpha,double contextSwitch){
+	public Process(char id,double [] randomValues,double lambda,double alpha,double contextSwitch){
 		burstTimeGuess = 1/lambda;
 		this.alpha = alpha;
 		arrivalTime = Math.floor(-1*Math.log(randomValues[0])/lambda);

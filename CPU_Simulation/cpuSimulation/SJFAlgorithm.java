@@ -11,31 +11,31 @@ import cpuSimulation.ArrivalComparator;
 
 // Basically wants a queue that orders by remaining time and the order the items
 //  are inserted
-class SJFComparator implements Comparator<SRTProcess>{
+class SJFComparator implements Comparator<Process>{
 	@Override
-	public int compare(SRTProcess p1, SRTProcess p2) {
+	public int compare(Process p1, Process p2) {
         return (int)Math.ceil(p1.getTimeGuess()-p2.getTimeGuess());
     }
 }
 
 
 public class SJFAlgorithm {
-	PriorityQueue<SRTProcess> Q;
-	private PriorityQueue<SRTProcess> arrivalQueue;
-	private ArrayList<SRTProcess> completedProcesses;
+	PriorityQueue<Process> Q;
+	private PriorityQueue<Process> arrivalQueue;
+	private ArrayList<Process> completedProcesses;
 	
 	public SJFAlgorithm(RandomSequence test,double alpha,double cw) {
-		arrivalQueue = new PriorityQueue<SRTProcess>(new ArrivalComparator());
+		arrivalQueue = new PriorityQueue<Process>(new ArrivalComparator());
 		double [] values = test.getSequence();
 		char id = 'A';
 		for(int i=0;i<test.size();i+=4) {
-			SRTProcess currentProcess = new SRTProcess(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha,cw);
+			Process currentProcess = new Process(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha,cw);
 			id++;
 			arrivalQueue.add(currentProcess);
 		}
 //		for(Process currentProcess:arrivalQueue)
 //			System.out.println(currentProcess+"\n");
-		completedProcesses = new ArrayList<SRTProcess>();	
+		completedProcesses = new ArrayList<Process>();	
 	}
 	
 	
@@ -48,12 +48,12 @@ public class SJFAlgorithm {
 			
 		}
 			
-		Q = new PriorityQueue<SRTProcess>(new SJFComparator());
-		SRTProcess currentProcess = arrivalQueue.poll();
+		Q = new PriorityQueue<Process>(new SJFComparator());
+		Process currentProcess = arrivalQueue.poll();
 		double count = currentProcess.getArrivalTime();
 		while(!arrivalQueue.isEmpty()||!Q.isEmpty()||currentProcess.getNumBurst()!=0) {
 			printQueueContents(Q);
-			SRTProcess newProcess;
+			Process newProcess;
 			while(arrivalQueue.size()>0&&count==arrivalQueue.peek().getArrivalTime()) { 
 				newProcess = arrivalQueue.poll();
 				newProcess.enterQueue(count);				
@@ -100,8 +100,8 @@ public class SJFAlgorithm {
 	}
 	
 	
-	private void printQueueContents(PriorityQueue<SRTProcess> q) {
-		PriorityQueue<SRTProcess> cp = new PriorityQueue<SRTProcess>(q);
+	private void printQueueContents(PriorityQueue<Process> q) {
+		PriorityQueue<Process> cp = new PriorityQueue<Process>(q);
 		System.out.println("Queue Size: " + cp.size());
 		System.out.print("Queue Contents: ");
 		for(int i = 0; i < cp.size(); i++) {
