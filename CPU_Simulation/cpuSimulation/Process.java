@@ -26,17 +26,17 @@ public abstract class Process{
 	protected Process(char id,double [] randomValues,double lambda,double alpha,double contextSwitch){
 		burstTimeGuess = 1/lambda;
 		this.alpha = alpha;
-		arrivalTime = -1*Math.log(randomValues[0])/lambda;
-		numCPUBurst = (int)(randomValues[1]*100);
+		arrivalTime = Math.floor(-1*Math.log(randomValues[0])/lambda);
+		numCPUBurst = (int)(randomValues[1]*100)+1;
 		numCPUBurstRecord = numCPUBurst;
 		if(numCPUBurst==0) {
 			state="COMPLETE";
 		}
 		else
 			state = "NOT ARRIVE";
-		cpuBurstTime = -1*Math.log(randomValues[2])/lambda;
+		cpuBurstTime = Math.ceil(-1*Math.log(randomValues[2])/lambda);
 		remainingTime = cpuBurstTime;
-		ioBurstTime = -1*Math.log(randomValues[3])/lambda;
+		ioBurstTime = Math.ceil(-1*Math.log(randomValues[3])/lambda);
 		processID = id;	
 		waitTime = new double[numCPUBurstRecord];
 		turnaroundTime = new double [numCPUBurstRecord];

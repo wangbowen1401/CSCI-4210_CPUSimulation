@@ -39,9 +39,10 @@ class RandomSequence{
 		{
 			this.seed = ((this.seed*25214903917L)+11)%(Math.pow(2, 48));
 			double rand = this.seed/(Math.pow(2,48));
-			double randomValue = -1*Math.log(1-rand%1)/lambda;
-			if(randomValue<upper)
+			double randomValue = -1*Math.log(rand%1)/lambda;
+			if(randomValue<=upper) {
 				sequence[i]=randomValue%1;
+			}
 			else
 				i--;
 		}
