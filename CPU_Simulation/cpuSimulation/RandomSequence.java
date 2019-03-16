@@ -1,5 +1,9 @@
 package cpuSimulation;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+
 /*
  * A RandomSequence class which will generate 4*n random doubles using the exponential distribution algorithm. 
  * The code might be removed to be implemented in other classes, but for now, it will stay in a isolated class
@@ -7,63 +11,57 @@ package cpuSimulation;
  * 
  */
 class RandomSequence{
-	private final double[] sequence;
+	private PriorityQueue<Process>sequence;
 	private double seed;
  	private final double lambda;
 	private final double upper;
-	private final int n;
 	
-	RandomSequence(long seed,double lambda,double upper,int n){
-		sequence = new double[4*n];
+	RandomSequence(long seed,double lambda,double alpha,double upper,int n){
+		sequence = new PriorityQueue<Process>(new ArrivalComparator());
 		this.seed = seed << 16;
 		this.seed = this.seed + 13070;
 		this.lambda = lambda;
 		this.upper = upper;
-		this.n = n;
-		random();
+		char id = 'A';
+		for(int i=0;i<n;i++) {
+			int arrivalTime = (int)(-1*Math.log(this.random())/lambda);
+			int numCPUBurst = (int)(this.random()*100)+1;
+			LinkedList<Integer> cpuBurstTime = new LinkedList<Integer>();
+			LinkedList<Integer> ioBurstTime = new LinkedList<Integer>();
+			for(int j=0;j<numCPUBurst;j++) {
+				cpuBurstTime.add((int)(-1*Math.log(this.random())/lambda));
+				if(j<numCPUBurst-1)
+					ioBurstTime.add((int)(-1*Math.log(this.random())/lambda));
+			}
+			Process p = new Process(id,arrivalTime,numCPUBurst,cpuBurstTime,ioBurstTime,lambda,alpha);
+			sequence.add(p);
+			id++;
+		}
 	}
 	
 	// Return a copy of the random sequence 
-	public double[] getSequence(){
-		double [] copy = new double[4*n];
-		for(int i =0;i<4*n;i++)
-			copy[i]=sequence[i];
-		return copy;
+	public PriorityQueue<Process>  getSequence(){
+		return new PriorityQueue<Process>(sequence);
 	}
 	
-	//In case the class is not needed anymore
-	//public void random(double seed,double lambda,double upper,int n)
-	public void random(){
-		
-		for(int i=0;i<4*n;i++)
-		{
-			this.seed = ((this.seed*25214903917L)+11)%(Math.pow(2, 48));
-			double rand = this.seed/(Math.pow(2,48));
-			double randomValue = -1*Math.log(rand%1)/lambda;
-			if(randomValue<=upper) {
-				sequence[i]=randomValue%1;
-			}
-			else
-				i--;
-		}
+	public double random(){
+		this.seed = ((this.seed*25214903917L)+11)%(Math.pow(2, 48));
+		double rand = this.seed/(Math.pow(2,48));
+		double randomValue = -1*Math.log(rand%1)/lambda;
+		if(randomValue<=upper)
+			return rand%1;
+		else
+			return random();
 	}
 	
-	public int size() {
-		return 4*n;
-	}
-	
-	public double getLambda() {
-		return lambda;
-	}
-	
-	// String to show all the data
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for(int i=0;i<4*n;i++) {
-			sb.append(sequence[i]+"\n");
+		Iterator<Process> itr = sequence.iterator();
+		while(itr.hasNext()) {
+			sb.append(itr.next().printBursts());
+			sb.append("\n");
 		}
 		return sb.toString();
 	}
-	
 }

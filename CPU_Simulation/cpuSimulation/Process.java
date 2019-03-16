@@ -1,23 +1,25 @@
 package cpuSimulation;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 //Basically wants a queue that orders by remaining time and the order the items
 //are inserted
 class ArrivalComparator implements Comparator<Process>{
-@Override
-public int compare(Process a,Process b) {
-	if (a.getArrivalTime()!=b.getArrivalTime())
-		return (int)(a.getArrivalTime()-b.getArrivalTime());
-	else {
-		if(a.getState()=="BLOCKED"&&b.getState()=="BLOCKED") {
-			return a.getProcessID()<b.getProcessID()?-1:1;
+	@Override
+	public int compare(Process a,Process b) {
+		if (a.getArrivalTime()!=b.getArrivalTime())
+			return (int)(a.getArrivalTime()-b.getArrivalTime());
+		else {
+			if(a.getState()=="BLOCKED"&&b.getState()=="BLOCKED") {
+				return a.getProcessID()<b.getProcessID()?-1:1;
+			}
+			else if(a.getState()=="BLOCKED")
+				return -1;
 		}
-		else if(a.getState()=="BLOCKED")
-			return -1;
+		return a.getProcessID()<b.getProcessID()?-1:1;
 	}
-	return a.getProcessID()<b.getProcessID()?-1:1;
-}
 }
 
 
@@ -32,36 +34,38 @@ public  class Process{
 	double burstTimeGuess;
 	int numCPUBurst;
 	int numCPUBurstRecord;
-	double cpuBurstTime;
 	double remainingTime;
-	double ioBurstTime;
 	int numPreempt;
 	int numContextSwitch;
 	
 	double[] waitTime;
 	double[] turnaroundTime;
+	LinkedList<Integer> cpuBurstTime;
+	LinkedList<Integer> ioBurstTime;
 	
 	
 	// Need getters and setters for changing variables
-	public Process(char id,double [] randomValues,double lambda,double alpha){
+	public Process(char id,int arrivalTime,int numCPUBurst,LinkedList<Integer> cpuBurstTime,LinkedList<Integer> ioBurstTime,double lambda,double alpha){
 		burstTimeGuess = 1/lambda;
 		this.alpha = alpha;
-		arrivalTime = Math.floor(-1*Math.log(randomValues[0])/lambda);
-		numCPUBurst = (int)(randomValues[1]*100)+1;
+		this.arrivalTime = arrivalTime;
+		this.numCPUBurst =numCPUBurst;
 		numCPUBurstRecord = numCPUBurst;
-		if(numCPUBurst==0) {
+		
+		if(numCPUBurst==0) 
 			state="COMPLETE";
-		}
 		else
 			state = "NOT ARRIVE";
-		cpuBurstTime = Math.ceil(-1*Math.log(randomValues[2])/lambda);
-		remainingTime = cpuBurstTime;
-		ioBurstTime = Math.ceil(-1*Math.log(randomValues[3])/lambda);
+		// Fill burst times
+		this.cpuBurstTime=cpuBurstTime;
+		remainingTime = cpuBurstTime.getFirst();
+		this.ioBurstTime = ioBurstTime;
+		
+		
 		processID = id;	
 		waitTime = new double[numCPUBurstRecord];
 		turnaroundTime = new double [numCPUBurstRecord];
 		Arrays.fill(waitTime, 0);
-		Arrays.fill(turnaroundTime, cpuBurstTime);
 		enterTime = -1;
 		numPreempt = 0;
 		numContextSwitch=0;
@@ -70,6 +74,14 @@ public  class Process{
 	
 	
 	///////////////////////////////// Getters and Setters/////////////////////////////////
+	public LinkedList<Integer> getCPUBurst(){
+		return new LinkedList<Integer>(cpuBurstTime);
+	}
+	
+	public LinkedList<Integer> getIOBurst(){
+		return new LinkedList<Integer>(ioBurstTime);
+	}
+	
 	public char getProcessID() {
 		return processID;
 	}
@@ -107,7 +119,7 @@ public  class Process{
 	}
 	
 	public double getCPUBurstTime() {
-		return cpuBurstTime;
+		return cpuBurstTime.getFirst();
 	}
 	
 	public void resetEnterTime() {
@@ -122,6 +134,7 @@ public  class Process{
 		return numContextSwitch;
 	}
 	
+	//////////////////////////////////////////// Simulation Helpers ///////////////////////////////////////////
 	public void enterCPU(double time) {
 		this.state= "RUNNING";
 		if(enterTime!=-1)
@@ -130,6 +143,7 @@ public  class Process{
 	}
 	
 	public void enterQueue(double time) {
+		// If the process was in the CPU
 		if(state == "RUNNING"&&enterTime!=-1) {
 			remainingTime -=(time-enterTime); 
 			numContextSwitch++;
@@ -144,13 +158,15 @@ public  class Process{
 		numCPUBurst--;
 		turnaroundTime[numCPUBurst]+=waitTime[numCPUBurst];
 		if(numCPUBurst>0) {
+			cpuBurstTime.poll();
 			state="BLOCKED";
-			remainingTime = cpuBurstTime;
-			arrivalTime = ioBurstTime+time;
-			burstTimeGuess = (1-alpha)*burstTimeGuess+alpha*cpuBurstTime;
+			remainingTime = cpuBurstTime.getFirst();
+			arrivalTime = ioBurstTime.poll()+time;
+			burstTimeGuess = (1-alpha)*burstTimeGuess+alpha*cpuBurstTime.getFirst();
 		}
-		else 
+		else {
 			state="COMPLETE";
+		}
 		numContextSwitch++;
 	}
 	
@@ -175,6 +191,21 @@ public  class Process{
 			sb.append(turnaroundTime[i]+" ");
 		}
 		
+		return sb.toString();
+	}
+	
+	
+	public String printBursts() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Process: "+this.processID+"\n");
+		Iterator<Integer> cItr = cpuBurstTime.iterator();
+		Iterator<Integer> iItr = ioBurstTime.iterator();
+		while(cItr.hasNext()) {
+			sb.append("CPU Burst: "+cItr.next());
+			if(iItr.hasNext())
+				sb.append(" -> I/O Burst: "+iItr.next());
+			sb.append("\n");
+		}
 		return sb.toString();
 	}
 }

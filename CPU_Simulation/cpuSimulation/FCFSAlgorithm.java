@@ -1,7 +1,7 @@
 package cpuSimulation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -12,19 +12,12 @@ public class FCFSAlgorithm {
 	private double cw;
 	
 	public FCFSAlgorithm(RandomSequence test,double alpha,double cw) {
-		arrival = new PriorityQueue<Process>(new ArrivalComparator());
-		double [] values = test.getSequence();
-		char id = 'a';
-		for(int i=0;i<test.size();i+=4) {
-			Process p = new Process(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha);
-			id++;
-			arrival.add(p);
-		}
+		arrival = test.getSequence();
 		this.cw = cw;
 		done = new ArrayList<Process>();	
 	}
 	
-	public void simulate() {
+	public void simulate(){
 		if(arrival.size()==0)
 			return;
 		Queue<Process> rq = new LinkedList<Process>();
@@ -32,10 +25,12 @@ public class FCFSAlgorithm {
 		double count = p.getArrivalTime();
 		while(!arrival.isEmpty()||!rq.isEmpty()||p.getNumBurst()!=0) {
 			// Add all the Process with the same arrival time
+			printQueueContents(rq);
 			Process newProcess;
 			while(arrival.size()>0&&count==arrival.peek().getArrivalTime()) { 
 				newProcess = arrival.poll();
 				newProcess.enterQueue(count);
+				rq.add(newProcess);
 			}
 			
 			// The Process enters CPU
@@ -76,9 +71,20 @@ public class FCFSAlgorithm {
 				rq.add(newProcess);	
 			}
 		}
-		System.out.println("time <"+count+">ms: Simulator ended for <FCFS> [Q empty]");
-			
-			
+		System.out.println("time <"+count+">ms: Simulator ended for <FCFS> [Q empty]");		
+	}
+	
+	private void printQueueContents(Queue<Process> q){
+		Iterator<Process> itr = q.iterator();
+		System.out.println("Queue Size: " + q.size());
+		System.out.print("Queue Contents: ");
+		while(itr.hasNext()) {
+			Process p = itr.next();
+			System.out.print(p.getProcessID());
+			if(itr.hasNext())
+				System.out.print(",");	
+		}
+		System.out.println();	
 	}
 	
 	private double getAvgCPUBurst() {
@@ -121,6 +127,14 @@ public class FCFSAlgorithm {
 		return total;
 	}
 	
+	private int getTotalPreempt() {
+		int total = 0;
+		for(Process p : done) {
+			total+=p.getNumPreempt();
+		}
+		return total;
+	}
+	
 	@Override
 	public String toString(){
 
@@ -134,7 +148,7 @@ public class FCFSAlgorithm {
 		double avgWaitTime = this.getAvgWaitTime();
 		double avgTurnaroundTime = this.getAvgTurnaroundTime();
 		int numCW = this.getTotalCW();
-		int numPreempt = 0;
+		int numPreempt = this.getTotalPreempt();
 		
 		// Prints
 		sb.append("-- average CPU burst time: "+ String.format("%.3f",avgCPUBurst));

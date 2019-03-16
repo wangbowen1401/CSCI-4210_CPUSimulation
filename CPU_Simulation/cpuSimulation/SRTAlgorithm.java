@@ -1,7 +1,6 @@
 package cpuSimulation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.PriorityQueue;
@@ -14,65 +13,44 @@ class SRTComparator implements Comparator<Process>{
 
 public class SRTAlgorithm{
 	private PriorityQueue<Process> arrival;
+	private PriorityQueue<Process> arrivalRecord;
 	private ArrayList<Process> done;
 	private double cw;
 	
-	public SRTAlgorithm(RandomSequence test,double alpha,double cw) {
-		arrival = new PriorityQueue<Process>(new ArrivalComparator());
-		double [] values = test.getSequence();
-		char id = 'a';
-		for(int i=0;i<test.size();i+=4) {
-			Process p = new Process(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha);
-			id++;
-			arrival.add(p);
-		}
+	public SRTAlgorithm(RandomSequence arrival,double cw) {
+		arrivalRecord=arrival.getSequence();
+		this.arrival = arrival.getSequence();
 		this.cw=cw;
 		done = new ArrayList<Process>();	
 	}
-	/* Pseudocode
-	 * 1. Add a SRTProcess from arrival queue
-	 * 2. Check if any other arrival time is the same (No context switch time)
-	 * 3. Context switch the SRTProcess into CPU
-	 * 4. Set count to the min of arrival time of next SRTProcess or remainingTime + time 
-	 * 		of current progress.
-	 * 5. Case 1
-	 * 		The new SRTProcess has a shorter burst time guess than remainingTime
-	 * 				a. Check for context completion at time of SRTProcess arrival
-	 * 					If complete
-	 * 						1. Send SRTProcess back for I/O burst if numCPUBurst !=0
-	 * 					Else 
-	 * 						2. Record enter time = time + cw
-	 * 						3. Set state to running
-	 * 				b. Context switch the two SRTProcess
-	 * 	  Case 2
-	 * 		The new SRTProcess has a longer burst time guess than remainingTime,
-	 * 			insert the SRTProcess into the ready queue. 
-	 * 				a. set enter time, change state
-	 */
+
 	public void simulate() {
+		// Making sure n != 0
 		if(arrival.size()==0) {
 			System.out.println("time <0>ms: Simulator ended for <SRT> [Q empty]");
 			return;
 		}
 		PriorityQueue<Process> pq = new PriorityQueue<Process>(new SRTComparator());
 		Process p = arrival.poll();
-		double count = p.getArrivalTime()+cw/2;
-		while(!arrival.isEmpty()||!pq.isEmpty()) {
+		double count = p.getArrivalTime();
+		while(!arrival.isEmpty()||!pq.isEmpty()||p.getNumBurst()!=0){
 			// Add all the SRTProcess with the same arrival time
 			printQueueContents(pq);
-			Process newProcess;
-			while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) { 
+			
+			while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) {
+				Process newProcess;
 				newProcess = arrival.poll();
 				newProcess.enterQueue(newProcess.getArrivalTime());
+				pq.add(newProcess);
 			}
 			
-			// The SRTProcess enters CPU
+			// The Process enters CPU
 			if(p.getState()!="RUNNING") {
 				count+=cw/2;
 				p.enterCPU(count);
 			}
 			
-			// Check the next SRTProcess arrival time vs remaining time of current SRTProcess
+			// Check the next process arrival time vs remaining time of current Process
 			double running = p.getRemainingTime()+p.getEnterTime();
 			double in =Integer.MAX_VALUE;
 			if(arrival.size()>0)
@@ -90,10 +68,11 @@ public class SRTAlgorithm{
 					arrival.add(p);
 				}
 				// Completed all the cpu and io bursts, added to arrayList for analysis
-				else
+				else {
 					done.add(p);
+				}
 				// Move onto the next SRTProcess in the ready queue because new SRTProcess didn't arrive yet.
-				if(pq.size()!=0&&running!=in) {
+				if(pq.size()!=0) {
 					p = pq.poll();
 				}
 				else if(arrival.size()!=0) {
@@ -105,7 +84,6 @@ public class SRTAlgorithm{
 				double remain = p.getRemainingTime()-(count-p.getEnterTime()); 
 				// A preemption is needed
 				if(arrival.peek().getTimeGuess()<remain) {
-					//System.out.println("Preempting CPU SRTProcess " + "remainTime: "+remain);
 					count+=cw/2;
 					p.enterQueue(count);
 					pq.add(p);
@@ -113,8 +91,8 @@ public class SRTAlgorithm{
 				}
 				// The new SRTProcess will not cause preemption, so just add it to the queue
 				else {
+					Process newProcess;
 					newProcess = arrival.poll();
-					//System.out.println("Adding SRTProcess "+ newSRTProcess.getSRTProcessID()+" to Ready Queue ");
 					newProcess.enterQueue(count);
 					pq.add(newProcess);
 				}
@@ -139,10 +117,14 @@ public class SRTAlgorithm{
 	private double getAvgCPUBurst() {
 		double total = 0;
 		int entries=0;
-		for(Process p : done) {
-			entries = p.getNumCPUBurstRecord();
-			total += p.getCPUBurstTime()*p.getNumCPUBurstRecord();
+		for(Process p : arrivalRecord) {
+			entries += p.getNumCPUBurstRecord();
+			for(Integer time:p.getCPUBurst()) {
+				total += time;
+			}
 		}
+		if(entries==0)
+			return 0;
 		return total/entries;
 	}
 	
@@ -154,6 +136,8 @@ public class SRTAlgorithm{
 			for(double w:p.waitTime)
 				total+=w;
 		}
+		if(entries==0)
+			return 0;
 		return total/entries;
 	}
 	

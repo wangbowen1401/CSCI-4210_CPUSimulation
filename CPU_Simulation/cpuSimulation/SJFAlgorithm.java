@@ -1,12 +1,7 @@
 package cpuSimulation;
-
-
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.PriorityQueue;
-import cpuSimulation.ArrivalComparator;
 
 
 // Basically wants a queue that orders by remaining time and the order the items
@@ -26,14 +21,7 @@ public class SJFAlgorithm {
 	private double cw;
 	
 	public SJFAlgorithm(RandomSequence test,double alpha,double cw) {
-		arrivalQueue = new PriorityQueue<Process>(new ArrivalComparator());
-		double [] values = test.getSequence();
-		char id = 'A';
-		for(int i=0;i<test.size();i+=4) {
-			Process currentProcess = new Process(id,Arrays.copyOfRange(values, i, i+4),test.getLambda(),alpha);
-			id++;
-			arrivalQueue.add(currentProcess);
-		}
+		arrivalQueue = test.getSequence();
 		this.cw=cw;
 		completedProcesses = new ArrayList<Process>();	
 	}
