@@ -14,7 +14,8 @@ public class FCFSAlgorithm {
 	public FCFSAlgorithm(RandomSequence test,double alpha,double cw) {
 		arrival = test.getSequence();
 		this.cw = cw;
-		done = new ArrayList<Process>();	
+		done = new ArrayList<Process>();
+		test.printSequenceContent();
 	}
 	
 	public void simulate(){
