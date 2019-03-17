@@ -6,6 +6,15 @@ import java.util.LinkedList;
 
 //Basically wants a queue that orders by remaining time and the order the items
 //are inserted
+
+
+class AlphaComparator implements Comparator<Process>{
+	
+	@Override
+	public int compare(Process a, Process b) {
+		return a.getProcessID() - b.getProcessID();
+	}
+}
 class ArrivalComparator implements Comparator<Process>{
 	@Override
 	public int compare(Process a,Process b) {

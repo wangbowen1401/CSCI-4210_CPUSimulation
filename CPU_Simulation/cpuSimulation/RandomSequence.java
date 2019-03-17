@@ -23,7 +23,7 @@ class RandomSequence{
 		this.lambda = lambda;
 		this.upper = upper;
 		char id = 'A';
-		for(int i=0;i<2;i++) {
+		for(int i=0;i<n;i++) {
 			int arrivalTime = (int)Math.floor(-1*Math.log(this.random())/lambda);
 			int numCPUBurst = (int)(this.random()*100)+1;
 			LinkedList<Integer> cpuBurstTime = new LinkedList<Integer>();
@@ -55,11 +55,11 @@ class RandomSequence{
 			rand=1+rand;
 		double randomValue = -1*Math.log(rand)/this.lambda;
 		if(randomValue<=upper) {
-			System.out.println("Accepted: "+rand);
+			//System.out.println("Accepted: "+rand);
 			return rand;
 		}
 		else {
-			System.out.println("Rejected: "+rand);
+			//System.out.println("Rejected: "+rand);
 			return random();
 		}
 	}
