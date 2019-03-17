@@ -23,7 +23,7 @@ public class Project1{
 		RandomSequence test = new RandomSequence(seed,lambda,alpha,upper,n);
 		//SRTAlgorithm SRT = new SRTAlgorithm(test,cw);
 		//SRT.simulate();
-		
+
 		//System.out.println(SRT);
 		//FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
 		//FCFS.simulate();
@@ -40,7 +40,6 @@ public class Project1{
 		//	writer.println(SRT);
 		//writer.println(FCFS);
 		//writer.println(RR);
-		writer.close();
 		
 	}
 

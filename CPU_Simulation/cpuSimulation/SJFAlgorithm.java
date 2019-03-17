@@ -48,6 +48,8 @@ public class SJFAlgorithm {
 		
 		
 		if(arrivalQueue.isEmpty()) {
+			System.out.println("time <"+0+">ms: Simulator ended for <SJF> [Q empty]");
+
 			return;
 		}
 			
@@ -69,7 +71,7 @@ public class SJFAlgorithm {
 		
 		
 		
-		while((!arrivalQueue.isEmpty()|!Q.isEmpty())&&currentProcess.getNumBurst()!=0) {
+		while((!arrivalQueue.isEmpty()|!Q.isEmpty())||currentProcess.getNumBurst()!=0) {
 			//printQueueContents(Q);
 			Process newProcess;
 			while(arrivalQueue.size()>0&&count==arrivalQueue.peek().getArrivalTime()) { 
