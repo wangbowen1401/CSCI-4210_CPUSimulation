@@ -22,31 +22,29 @@ class ArrivalComparator implements Comparator<Process>{
 	}
 }
 
-
-
 public  class Process{
 	final char processID;
 	final double alpha;
 	
 	String state;
-    double arrivalTime;
-	double enterTime; // When the process enter ready queue or cpu
-	double burstTimeGuess;
+    int arrivalTime;
+	int enterTime; // When the process enter ready queue or cpu
+	int burstTimeGuess;
 	int numCPUBurst;
 	int numCPUBurstRecord;
-	double remainingTime;
+	int remainingTime;
 	int numPreempt;
 	int numContextSwitch;
 	
-	double[] waitTime;
-	double[] turnaroundTime;
+	int [] waitTime;
+	int [] turnaroundTime;
 	LinkedList<Integer> cpuBurstTime;
 	LinkedList<Integer> ioBurstTime;
 	
 	
 	// Need getters and setters for changing variables
 	public Process(char id,int arrivalTime,int numCPUBurst,LinkedList<Integer> cpuBurstTime,LinkedList<Integer> ioBurstTime,double lambda,double alpha){
-		burstTimeGuess = 1/lambda;
+		burstTimeGuess = (int)(1/lambda);
 		this.alpha = alpha;
 		this.arrivalTime = arrivalTime;
 		this.numCPUBurst =numCPUBurst;
@@ -63,8 +61,8 @@ public  class Process{
 		
 		
 		processID = id;	
-		waitTime = new double[numCPUBurstRecord];
-		turnaroundTime = new double [numCPUBurstRecord];
+		waitTime = new int[numCPUBurstRecord];
+		turnaroundTime = new int [numCPUBurstRecord];
 		Arrays.fill(waitTime, 0);
 		enterTime = -1;
 		numPreempt = 0;
@@ -86,7 +84,7 @@ public  class Process{
 		return processID;
 	}
 	
-	public double[] getTurnaroundTime() {
+	public int[] getTurnaroundTime() {
 		return Arrays.copyOf(turnaroundTime,turnaroundTime.length);
 	}
 	
@@ -94,15 +92,15 @@ public  class Process{
 		return numCPUBurstRecord;
 	}
 	
-	public double getTimeGuess() {
+	public int getTimeGuess() {
 		return burstTimeGuess;
 	}
 	
-	public double getArrivalTime() {
+	public int getArrivalTime() {
 		return arrivalTime;
 	}
 	
-	public double getRemainingTime() {
+	public int getRemainingTime() {
 		return remainingTime;
 	}
 	
@@ -110,7 +108,7 @@ public  class Process{
 		return state;
 	}
 	
-	public double getEnterTime(){
+	public int getEnterTime(){
 		return enterTime;
 	}
 	
@@ -118,7 +116,7 @@ public  class Process{
 		return numCPUBurst;
 	}
 	
-	public double getCPUBurstTime() {
+	public int getCPUBurstTime() {
 		return cpuBurstTime.getFirst();
 	}
 	
@@ -135,14 +133,14 @@ public  class Process{
 	}
 	
 	//////////////////////////////////////////// Simulation Helpers ///////////////////////////////////////////
-	public void enterCPU(double time) {
+	public void enterCPU(int time) {
 		this.state= "RUNNING";
 		if(enterTime!=-1)
 			waitTime[numCPUBurst-1]+=time-enterTime;
 		enterTime = time;// Refers to when the process enter the CPU
 	}
 	
-	public void enterQueue(double time) {
+	public void enterQueue(int time) {
 		// If the process was in the CPU
 		if(state == "RUNNING"&&enterTime!=-1) {
 			remainingTime -=(time-enterTime); 
@@ -154,7 +152,7 @@ public  class Process{
 	}
 	
 	// For SRT when CPU burst is complete
-	public void complete(double time) {
+	public void complete(int time) {
 		numCPUBurst--;
 		turnaroundTime[numCPUBurst]+=waitTime[numCPUBurst];
 		if(numCPUBurst>0) {
@@ -162,7 +160,7 @@ public  class Process{
 			state="BLOCKED";
 			remainingTime = cpuBurstTime.getFirst();
 			arrivalTime = ioBurstTime.poll()+time;
-			burstTimeGuess = (1-alpha)*burstTimeGuess+alpha*cpuBurstTime.getFirst();
+			burstTimeGuess = (int)((1-alpha)*burstTimeGuess+alpha*cpuBurstTime.getFirst());
 		}
 		else {
 			state="COMPLETE";

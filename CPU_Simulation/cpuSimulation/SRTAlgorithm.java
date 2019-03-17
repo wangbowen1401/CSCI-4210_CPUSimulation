@@ -7,7 +7,10 @@ import java.util.PriorityQueue;
 
 class SRTComparator implements Comparator<Process>{
 	public int compare(Process p1, Process p2) {
-        return (int)Math.ceil(p1.getTimeGuess()-p2.getTimeGuess());
+		if(p1.getTimeGuess()!=p2.getTimeGuess())
+			return (int)Math.ceil(p1.getTimeGuess()-p2.getTimeGuess());
+		else
+			return p1.getProcessID()<p2.getProcessID()?-1:1;
     }
 }
 
@@ -25,6 +28,7 @@ public class SRTAlgorithm{
 	}
 
 	public void simulate() {
+		System.out.println("time 0ms: Simulator started for SRT [Q <empty>]");
 		// Making sure n != 0
 		if(arrival.size()==0) {
 			System.out.println("time <0>ms: Simulator ended for <SRT> [Q empty]");
@@ -32,7 +36,8 @@ public class SRTAlgorithm{
 		}
 		PriorityQueue<Process> pq = new PriorityQueue<Process>(new SRTComparator());
 		Process p = arrival.poll();
-		double count = p.getArrivalTime();
+		int count = p.getArrivalTime();
+		System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess());
 		while(!arrival.isEmpty()||!pq.isEmpty()||p.getNumBurst()!=0){
 			// Add all the SRTProcess with the same arrival time
 			printQueueContents(pq);
@@ -51,8 +56,8 @@ public class SRTAlgorithm{
 			}
 			
 			// Check the next process arrival time vs remaining time of current Process
-			double running = p.getRemainingTime()+p.getEnterTime();
-			double in =Integer.MAX_VALUE;
+			int running = p.getRemainingTime()+p.getEnterTime();
+			int in =Integer.MAX_VALUE;
 			if(arrival.size()>0)
 				in =  arrival.peek().getArrivalTime();
 			count = Math.min(running, in);
