@@ -23,7 +23,6 @@ public class Project1{
 		RandomSequence test = new RandomSequence(seed,lambda,alpha,upper,n);
 		//SRTAlgorithm SRT = new SRTAlgorithm(test,cw);
 		//SRT.simulate();
-<<<<<<< HEAD
 		
 		//System.out.println(SRT);
 		//FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
@@ -42,15 +41,6 @@ public class Project1{
 		//writer.println(FCFS);
 		//writer.println(RR);
 		writer.close();
-=======
-		//System.out.println(SRT);
-		FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
-		FCFS.simulate();
-		//System.out.println(FCFS);
-		//SJFAlgorithm SJF = new SJFAlgorithm(test, alpha, cw);
-		//SJF.simulate();
-		//System.out.println(SJF);
->>>>>>> e9592a9459173ecbbc417575bfc0fa9aada7fdbb
 		
 	}
 
