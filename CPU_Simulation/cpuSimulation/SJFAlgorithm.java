@@ -30,6 +30,12 @@ public class SJFAlgorithm {
 	
 	
 	public void simulate() {
+		
+		PriorityQueue<Process> print = new PriorityQueue<>(arrivalQueue);
+		
+		for(Process p : print) {
+			System.out.println("Process " + p.getProcessID() + "[NEW] (arrival time " + p.getArrivalTime() + " ms) " + p.getNumBurst() + " CPU bursts");
+		}
 
 		if(arrivalQueue.isEmpty()) {
 			return;
@@ -88,12 +94,16 @@ public class SJFAlgorithm {
 	
 	private void printQueueContents(PriorityQueue<Process> q) {
 		PriorityQueue<Process> cp = new PriorityQueue<Process>(q);
-		System.out.println("Queue Size: " + cp.size());
-		System.out.print("Queue Contents: ");
-		for(int i = 0; i < cp.size(); i++) {
-			System.out.print(cp.poll().getProcessID() + ", ");			
+		//System.out.println("Queue Size: " + cp.size());
+		if(cp.isEmpty()) {
+			System.out.println("[Q <empty>]");
+			return;
 		}
-		System.out.println();
+		System.out.print("[Q ");
+		for(int i = 0; i < cp.size(); i++) {
+			System.out.print(" " + cp.poll().getProcessID());			
+		}
+		System.out.println("]");
 	
 	}
 	
