@@ -35,6 +35,7 @@ public class SJFAlgorithm {
 		
 		for(Process p : print) {
 			System.out.println("Process " + p.getProcessID() + "[NEW] (arrival time " + p.getArrivalTime() + " ms) " + p.getNumBurst() + " CPU bursts");
+			System.out.println(p.printBursts());
 		}
 
 		if(arrivalQueue.isEmpty()) {

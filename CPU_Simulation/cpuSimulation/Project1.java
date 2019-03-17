@@ -18,10 +18,14 @@ public class Project1{
 //		FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
 //		FCFS.simulate();
 //		System.out.println(FCFS);
+		SJFAlgorithm SJF = new SJFAlgorithm(test, alpha, cw);
 
-		//SJFAlgorithm SJF = new SJFAlgorithm(test, alpha, cw);
-		//SJF.simulate();
-		//System.out.println(SJF);
+		//FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
+		//FCFS.simulate();
+		//System.out.println(FCFS);
+
+		SJF.simulate();
+		System.out.println(SJF);
 		
 	}
 
