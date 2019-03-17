@@ -44,7 +44,7 @@ public class SJFAlgorithm {
 			
 		Q = new PriorityQueue<Process>(new SJFComparator());
 		Process currentProcess = arrivalQueue.poll();
-		double count = currentProcess.getArrivalTime();
+		int count = currentProcess.getArrivalTime();
 		while(!arrivalQueue.isEmpty()||!Q.isEmpty()||currentProcess.getNumBurst()!=0) {
 			printQueueContents(Q);
 			Process newProcess;
@@ -58,8 +58,8 @@ public class SJFAlgorithm {
 				currentProcess.enterCPU(count);
 			}
 			
-			double running = currentProcess.getRemainingTime()+currentProcess.getEnterTime();
-			double in =Integer.MAX_VALUE;
+			int running = currentProcess.getRemainingTime()+currentProcess.getEnterTime();
+			int in =Integer.MAX_VALUE;
 			if(arrivalQueue.size()>0)
 				in =  arrivalQueue.peek().getArrivalTime();
 			count = Math.min(running, in);

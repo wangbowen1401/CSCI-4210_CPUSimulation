@@ -15,19 +15,13 @@ public class Project1{
 		//SRTAlgorithm SRT = new SRTAlgorithm(test,cw);
 		//SRT.simulate();
 		//System.out.println(SRT);
-<<<<<<< HEAD
 //		FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
 //		FCFS.simulate();
 //		System.out.println(FCFS);
-		SJFAlgorithm SJF = new SJFAlgorithm(test, alpha, cw);
-=======
-		//FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
-		//FCFS.simulate();
-		//System.out.println(FCFS);
-		/*SJFAlgorithm SJF = new SJFAlgorithm(test, alpha, cw);
->>>>>>> 617ceaf6d0f5ecf3150df2be18c64dc0ed7852e9
-		SJF.simulate();
-		System.out.println(SJF);
+
+		//SJFAlgorithm SJF = new SJFAlgorithm(test, alpha, cw);
+		//SJF.simulate();
+		//System.out.println(SJF);
 		
 	}
 

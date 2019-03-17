@@ -12,26 +12,32 @@ import java.util.PriorityQueue;
  */
 class RandomSequence{
 	private PriorityQueue<Process>sequence;
-	private double seed;
+	private long seed;
  	private final double lambda;
 	private final double upper;
 	
 	RandomSequence(long seed,double lambda,double alpha,double upper,int n){
 		sequence = new PriorityQueue<Process>(new ArrivalComparator());
-		this.seed = seed << 16;
+		this.seed= seed << 16;
 		this.seed = this.seed + 13070;
 		this.lambda = lambda;
 		this.upper = upper;
 		char id = 'A';
-		for(int i=0;i<n;i++) {
+		for(int i=0;i<1;i++) {
 			int arrivalTime = (int)Math.floor(-1*Math.log(this.random())/lambda);
 			int numCPUBurst = (int)(this.random()*100)+1;
 			LinkedList<Integer> cpuBurstTime = new LinkedList<Integer>();
 			LinkedList<Integer> ioBurstTime = new LinkedList<Integer>();
+			System.out.println("Process A :(arrival time "+arrivalTime+" numCPUBurst: "+numCPUBurst);
 			for(int j=0;j<numCPUBurst;j++) {
-				cpuBurstTime.add((int)Math.ceil(-1*Math.log(this.random())/lambda));
-				if(j<numCPUBurst-1)
-					ioBurstTime.add((int)Math.ceil(-1*Math.log(this.random())/lambda));
+				int a=(int)Math.ceil(-1*Math.log(this.random())/lambda);
+				cpuBurstTime.add(a);
+				System.out.println("CPU Burst time = "+a);
+				if(j<numCPUBurst-1) {
+					int b = (int)Math.ceil(-1*Math.log(this.random())/lambda);
+					System.out.println("IO Burst time = "+b);
+					ioBurstTime.add(b);
+				}
 			}
 			Process p = new Process(id,arrivalTime,numCPUBurst,cpuBurstTime,ioBurstTime,lambda,alpha);
 			sequence.add(p);
@@ -45,11 +51,11 @@ class RandomSequence{
 	}
 	
 	public double random(){
-		this.seed = ((this.seed*25214903917L)+11)%(Math.pow(2, 48));
-		double rand = this.seed/(Math.pow(2,48));
-		double randomValue = -1*Math.log(rand%1)/lambda;
+		this.seed = ((this.seed*25214903917L)+11)%((long)Math.pow(2, 48));
+		double rand = (this.seed+0.0)/(Math.pow(2,48));
+		double randomValue = -1*Math.log(rand)/lambda;
 		if(randomValue<=upper)
-			return rand%1;
+			return rand;
 		else
 			return random();
 	}
