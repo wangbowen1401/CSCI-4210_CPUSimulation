@@ -1,7 +1,10 @@
 package cpuSimulation;
 import java.util.ArrayList;
+
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.PriorityQueue;
+
 
 
 // Basically wants a queue that orders by remaining time and the order the items
@@ -30,33 +33,55 @@ public class SJFAlgorithm {
 	
 	
 	public void simulate() {
+		PriorityQueue<Process> copy = new PriorityQueue<>(arrivalQueue);
+		PriorityQueue<Process> print = new PriorityQueue<>(new AlphaComparator());
 		
-		PriorityQueue<Process> print = new PriorityQueue<>(arrivalQueue);
 		
-		for(Process p : print) {
-			System.out.println("Process " + p.getProcessID() + "[NEW] (arrival time " + p.getArrivalTime() + " ms) " + p.getNumBurst() + " CPU bursts");
-			System.out.println(p.printBursts());
+		while(!copy.isEmpty()) {
+			print.add(copy.poll());
 		}
-
+		Iterator<Process> it = print.iterator();
+		while(it.hasNext()) {
+			Process p = it.next();
+			System.out.println("Process " + p.getProcessID() + "[NEW] (arrival time " + p.getArrivalTime() + " ms) " + p.getNumBurst() + " CPU bursts");
+			//System.out.println(p.printBursts());
+		}
+		
+		
 		if(arrivalQueue.isEmpty()) {
 			return;
 			
 		}
 			
 		Q = new PriorityQueue<Process>(new SJFComparator());
+		
 		Process currentProcess = arrivalQueue.poll();
+		
+		//System.out.println("Process " + currentProcess.getProcessID() + "[NEW] (arrival time " + currentProcess.getArrivalTime() + " ms) " + currentProcess.getNumBurst() + " CPU bursts");
+		System.out.print("time 0ms: Simulator started for SJF");
+		printQueueContents(Q);
+		
 		int count = currentProcess.getArrivalTime();
+		System.out.print("time " + count + "ms: " + "Process " + currentProcess.getProcessID() + "(tau " + currentProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
+		printQueueContents(Q);
+		
+		
+		
 		while(!arrivalQueue.isEmpty()||!Q.isEmpty()||currentProcess.getNumBurst()!=0) {
 			printQueueContents(Q);
 			Process newProcess;
 			while(arrivalQueue.size()>0&&count==arrivalQueue.peek().getArrivalTime()) { 
 				newProcess = arrivalQueue.poll();
-				newProcess.enterQueue(count);				
+				newProcess.enterQueue(count);
+				System.out.print("time " + count + "ms: " + "Process " + newProcess.getProcessID() + "(tau " + newProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
+				printQueueContents(Q);
+
 			}
 			
 			if(currentProcess.getState()!="RUNNING") {
 				count+=cw/2;
 				currentProcess.enterCPU(count);
+				//System.
 			}
 			
 			int running = currentProcess.getRemainingTime()+currentProcess.getEnterTime();
