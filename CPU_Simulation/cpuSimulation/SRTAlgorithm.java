@@ -28,7 +28,7 @@ public class SRTAlgorithm{
 	}
 
 	public void simulate() {
-		System.out.println("time 0ms: Simulator started for SRT [Q <empty>]");
+	
 		// Making sure n != 0
 		if(arrival.size()==0) {
 			System.out.println("time <0>ms: Simulator ended for <SRT> [Q empty]");
@@ -37,11 +37,12 @@ public class SRTAlgorithm{
 		PriorityQueue<Process> pq = new PriorityQueue<Process>(new SRTComparator());
 		Process p = arrival.poll();
 		int count = p.getArrivalTime();
-		System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess());
-		while(!arrival.isEmpty()||!pq.isEmpty()||p.getNumBurst()!=0){
+		System.out.println("time 0ms: Simulator started for SRT [Q <empty>]");
+		pq.add(p);
+		System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(pq));
+		p = pq.poll();
+		while((!arrival.isEmpty()||!pq.isEmpty())&&p.getNumBurst()!=0){
 			// Add all the SRTProcess with the same arrival time
-			printQueueContents(pq);
-			
 			while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) {
 				Process newProcess;
 				newProcess = arrival.poll();
@@ -53,6 +54,7 @@ public class SRTAlgorithm{
 			if(p.getState()!="RUNNING") {
 				count+=cw/2;
 				p.enterCPU(count);
+				System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(pq));
 			}
 			
 			// Check the next process arrival time vs remaining time of current Process
@@ -106,17 +108,18 @@ public class SRTAlgorithm{
 		System.out.println("time <"+count+">ms: Simulator ended for <SRT> [Q empty]");
 	}
 	
-	private void printQueueContents(PriorityQueue<Process> q){
+	private String printQueueContents(PriorityQueue<Process> q){
 		Iterator<Process> itr = q.iterator();
-		System.out.println("Queue Size: " + q.size());
-		System.out.print("Queue Contents: ");
+		StringBuilder sb = new StringBuilder();
+		sb.append("[Q");
+		if(q.isEmpty())
+			sb.append(" <empty>]");
 		while(itr.hasNext()) {
 			Process p = itr.next();
-			System.out.print(p.getProcessID());
-			if(itr.hasNext())
-				System.out.print(",");	
+			sb.append(" "+p.getProcessID());
 		}
-		System.out.println();	
+		sb.append("]");
+		return sb.toString();
 	}
 	
 	private double getAvgCPUBurst() {
