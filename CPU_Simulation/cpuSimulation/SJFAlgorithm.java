@@ -96,6 +96,20 @@ public class SJFAlgorithm {
 
 			if(count==running) {
 				count+=cw/2;
+				while( arrivalQueue.size() > 0 && arrivalQueue.peek().getArrivalTime() < count ) {
+					Process p = arrivalQueue.peek();
+					Q.add(arrivalQueue.poll());
+					if(p.getState() == "BLOCKED") {
+						System.out.print("time " + count + "ms:" + "Process " + p.getProcessID() + "(tau " + p.getTimeGuess() + "ms) completed I/O; added to ready queue " );
+						printQueueContents(Q);
+					}else {
+						System.out.print("time " + count + "ms: Process " + p.getProcessID() + "(tau " + p.getTimeGuess() + "ms) arrived; added to ready queue ");
+						printQueueContents(Q);
+					}				
+					p.enterQueue(p.getArrivalTime());
+				}
+				
+				
 				currentProcess.complete(count);
 				if(currentProcess.getState()!="COMPLETE") {
 					System.out.print("time "+ (count-(cw/2)) + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
