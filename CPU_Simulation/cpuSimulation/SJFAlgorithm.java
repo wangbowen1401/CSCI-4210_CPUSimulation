@@ -44,13 +44,11 @@ public class SJFAlgorithm {
 		while(it.hasNext()) {
 			Process p = it.next();
 			System.out.println("Process " + p.getProcessID() + "[NEW] (arrival time " + p.getArrivalTime() + " ms) " + p.getNumBurst() + " CPU bursts");
-			//System.out.println(p.printBursts());
 		}
 		
 		
 		if(arrivalQueue.isEmpty()) {
 			return;
-			
 		}
 			
 		Q = new PriorityQueue<Process>(new SJFComparator());
