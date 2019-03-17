@@ -24,14 +24,14 @@ class RandomSequence{
 		this.upper = upper;
 		char id = 'A';
 		for(int i=0;i<n;i++) {
-			int arrivalTime = (int)(-1*Math.log(this.random())/lambda);
+			int arrivalTime = (int)Math.floor(-1*Math.log(this.random())/lambda);
 			int numCPUBurst = (int)(this.random()*100)+1;
 			LinkedList<Integer> cpuBurstTime = new LinkedList<Integer>();
 			LinkedList<Integer> ioBurstTime = new LinkedList<Integer>();
 			for(int j=0;j<numCPUBurst;j++) {
-				cpuBurstTime.add((int)(-1*Math.log(this.random())/lambda));
+				cpuBurstTime.add((int)Math.ceil(-1*Math.log(this.random())/lambda));
 				if(j<numCPUBurst-1)
-					ioBurstTime.add((int)(-1*Math.log(this.random())/lambda));
+					ioBurstTime.add((int)Math.ceil(-1*Math.log(this.random())/lambda));
 			}
 			Process p = new Process(id,arrivalTime,numCPUBurst,cpuBurstTime,ioBurstTime,lambda,alpha);
 			sequence.add(p);

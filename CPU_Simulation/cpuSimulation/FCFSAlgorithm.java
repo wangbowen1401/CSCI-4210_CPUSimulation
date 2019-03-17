@@ -22,7 +22,7 @@ public class FCFSAlgorithm {
 			return;
 		Queue<Process> rq = new LinkedList<Process>();
 		Process p = arrival.poll();
-		double count = p.getArrivalTime();
+		int count = p.getArrivalTime();
 		while(!arrival.isEmpty()||!rq.isEmpty()||p.getNumBurst()!=0) {
 			// Add all the Process with the same arrival time
 			printQueueContents(rq);
@@ -39,8 +39,8 @@ public class FCFSAlgorithm {
 				p.enterCPU(count);
 			}
 			
-			double running = p.getRemainingTime()+p.getEnterTime();
-			double in =Integer.MAX_VALUE;
+			int running = p.getRemainingTime()+p.getEnterTime();
+			int in =Integer.MAX_VALUE;
 			if(arrival.size()>0)
 				in =  arrival.peek().getArrivalTime();
 			count = Math.min(running, in);
