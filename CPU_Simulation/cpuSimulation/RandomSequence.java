@@ -23,19 +23,16 @@ class RandomSequence{
 		this.lambda = lambda;
 		this.upper = upper;
 		char id = 'A';
-		for(int i=0;i<1;i++) {
+		for(int i=0;i<2;i++) {
 			int arrivalTime = (int)Math.floor(-1*Math.log(this.random())/lambda);
 			int numCPUBurst = (int)(this.random()*100)+1;
 			LinkedList<Integer> cpuBurstTime = new LinkedList<Integer>();
 			LinkedList<Integer> ioBurstTime = new LinkedList<Integer>();
-			System.out.println("Process A :(arrival time "+arrivalTime+" numCPUBurst: "+numCPUBurst);
 			for(int j=0;j<numCPUBurst;j++) {
 				int a=(int)Math.ceil(-1*Math.log(this.random())/lambda);
 				cpuBurstTime.add(a);
-				System.out.println("CPU Burst time = "+a);
 				if(j<numCPUBurst-1) {
 					int b = (int)Math.ceil(-1*Math.log(this.random())/lambda);
-					System.out.println("IO Burst time = "+b);
 					ioBurstTime.add(b);
 				}
 			}
@@ -51,13 +48,20 @@ class RandomSequence{
 	}
 	
 	public double random(){
-		this.seed = ((this.seed*25214903917L)+11)%((long)Math.pow(2, 48));
-		double rand = (this.seed+0.0)/(Math.pow(2,48));
-		double randomValue = -1*Math.log(rand)/lambda;
-		if(randomValue<=upper)
+		long mod = (long) Math.pow(2,48);
+		this.seed = (long)((this.seed*25214903917L)+11)%(mod);
+		double rand = (this.seed+0.0)/(mod);
+		if(rand<0)
+			rand=1+rand;
+		double randomValue = -1*Math.log(rand)/this.lambda;
+		if(randomValue<=upper) {
+			System.out.println("Accepted: "+rand);
 			return rand;
-		else
+		}
+		else {
+			System.out.println("Rejected: "+rand);
 			return random();
+		}
 	}
 	
 	@Override
