@@ -8,13 +8,15 @@ import java.util.Queue;
 
 public class FCFSAlgorithm {
 	private PriorityQueue<Process> arrival;
+	private Queue<Process> rq;
 	private ArrayList<Process> done;
 	private double cw;
 	
-	public FCFSAlgorithm(RandomSequence test,double alpha,double cw) {
+	public FCFSAlgorithm(RandomSequence test,double cw) {
 		arrival = test.getSequence();
 		this.cw = cw;
 		done = new ArrayList<Process>();
+		this.rq = new LinkedList<Process>();
 		test.printSequenceContent();
 	}
 	
@@ -24,7 +26,6 @@ public class FCFSAlgorithm {
 			System.out.println("time <0>ms: Simulator ended for FCFS [Q <empty>]");
 			return;
 		}
-		Queue<Process> rq = new LinkedList<Process>();
 		Process p = arrival.poll();
 		int count = p.getArrivalTime();
 		rq.add(p);
@@ -46,6 +47,8 @@ public class FCFSAlgorithm {
 			if(p.getState()!="RUNNING") {
 				count+=cw/2;
 				p.enterCPU(count);
+				while(arrival.size()>0&&count>=arrival.peek().getArrivalTime())
+					addNewProcess();
 				System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(rq));
 			}
 			
@@ -58,15 +61,8 @@ public class FCFSAlgorithm {
 			if(count==running) {
 				count+=cw/2;
 				p.complete(count);
-				while(!arrival.isEmpty()&&arrival.peek().getArrivalTime()<count) {
-					Process newProcess = arrival.poll();
-					rq.add(newProcess);
-					if(newProcess.getState()!="BLOCKED")
-						System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-					else
-						System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
-					newProcess.enterQueue(newProcess.getArrivalTime());
-				}
+				while(!arrival.isEmpty()&&arrival.peek().getArrivalTime()<count) 
+					addNewProcess();
 				// Still more cpu bursts left
 				if(p.getState()!="COMPLETE") {
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+ " completed a CPU Burst; "+p.getNumBurst()+" bursts to go "+printQueueContents(rq));
@@ -81,10 +77,10 @@ public class FCFSAlgorithm {
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" terminated.");
 				}
 				// Move onto the next Process in the ready queue because new Process didn't arrive yet.
-				if(rq.size()!=0&&running!=in) {
+				if(rq.size()!=0) {
 					p = rq.poll();
 				}
-				else if(arrival.size()!=0) {
+				else if(arrival.size()!=0){
 					p=arrival.poll();
 					count = p.getArrivalTime();
 					rq.add(p);
@@ -105,16 +101,21 @@ public class FCFSAlgorithm {
 				}
 			}
 			else { // new Process arrives before the current Process finish
-				Process newProcess = arrival.poll();
-				rq.add(newProcess);
-				if(newProcess.getState()!="BLOCKED")
-					System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-				else
-					System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
-				newProcess.enterQueue(newProcess.getArrivalTime());
+				while(!arrival.isEmpty()&&arrival.peek().getArrivalTime()==count) 
+					addNewProcess();
 			}
 		}
 		System.out.println("time "+count+"ms: Simulator ended for FCFS "+printQueueContents(rq));		
+	}
+	
+	private void addNewProcess() {
+		Process newProcess = arrival.poll();
+		this.rq.add(newProcess);
+		if(newProcess.getState()!="BLOCKED")
+			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
+		else
+			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
+		newProcess.enterQueue(newProcess.getArrivalTime());
 	}
 	
 	private String printQueueContents(Queue<Process> q){
