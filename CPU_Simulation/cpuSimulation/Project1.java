@@ -28,16 +28,11 @@ public class Project1{
 		//FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
 		//FCFS.simulate();
 		//System.out.println(FCFS);
-		//SJFAlgorithm SJF = new SJFAlgorithm(test, alpha, cw);
-
-		//FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
-		//FCFS.simulate();
-		//System.out.println(FCFS);
 
 		//SJF.simulate();
 		//System.out.println(SJF);
 		//writer.println(SJF);
-		//	writer.println(SRT);
+		//writer.println(SRT);
 		//writer.println(FCFS);
 		//writer.println(RR);
 		
