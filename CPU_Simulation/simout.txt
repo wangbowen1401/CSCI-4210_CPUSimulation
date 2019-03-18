@@ -1,6 +1,0 @@
-Algorithm SJF
--- average CPU burst time: 1718.044
--- average wait time: 13984.110
--- average turnaround time: 13984.110
--- total number of context switches: 365
--- total number of preemptions: 0

@@ -21,22 +21,22 @@ public class Project1{
 		double cw = 8;
 		double alpha = 0.5;
 		RandomSequence test = new RandomSequence(seed,lambda,alpha,upper,n);
-		//SRTAlgorithm SRT = new SRTAlgorithm(test,cw);
-		//SRT.simulate();
+		SRTAlgorithm SRT = new SRTAlgorithm(test,cw);
+		SRT.simulate();
 
 		//System.out.println(SRT);
 		//FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
 		//FCFS.simulate();
 		//System.out.println(FCFS);
-		SJFAlgorithm SJF = new SJFAlgorithm(test, alpha, cw);
+		//SJFAlgorithm SJF = new SJFAlgorithm(test, alpha, cw);
 
 		//FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
 		//FCFS.simulate();
 		//System.out.println(FCFS);
 
-		SJF.simulate();
-		System.out.println(SJF);
-		writer.println(SJF);
+		//SJF.simulate();
+		//System.out.println(SJF);
+		//writer.println(SJF);
 		//	writer.println(SRT);
 		//writer.println(FCFS);
 		//writer.println(RR);
