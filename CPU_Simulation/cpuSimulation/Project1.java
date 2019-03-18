@@ -42,7 +42,19 @@ public class Project1{
 		//writer.println(FCFS);
 		//writer.println(RR);
 		writer.close();
+<<<<<<< HEAD
 
+=======
+=======
+		//System.out.println(SRT);
+		FCFSAlgorithm FCFS = new FCFSAlgorithm(test,alpha,cw);
+		FCFS.simulate();
+		//System.out.println(FCFS);
+		//SJFAlgorithm SJF = new SJFAlgorithm(test, alpha, cw);
+		//SJF.simulate();
+		//System.out.println(SJF);
+>>>>>>> e9592a9459173ecbbc417575bfc0fa9aada7fdbb
+>>>>>>> 7226738cd1055069f719d6ff8a09c6860d43a99c
 		
 	}
 

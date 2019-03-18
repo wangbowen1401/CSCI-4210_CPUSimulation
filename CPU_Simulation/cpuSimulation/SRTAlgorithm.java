@@ -18,6 +18,7 @@ public class SRTAlgorithm{
 	private PriorityQueue<Process> arrival;
 	private PriorityQueue<Process> arrivalRecord;
 	private ArrayList<Process> done;
+	private PriorityQueue<Process> rq;
 	private double cw;
 	
 	public SRTAlgorithm(RandomSequence arrival,double cw) {
@@ -26,32 +27,32 @@ public class SRTAlgorithm{
 		this.cw=cw;
 		done = new ArrayList<Process>();
 		arrival.printSequenceContent();
+		rq = new PriorityQueue<Process>(new SRTComparator());
 	}
 
 	public void simulate() {
-		System.out.println("time 0ms: Simulator started for SRT [Q <empty>]");
+		System.out.println("time 0ms: Simulator started for SRT "+printQueueContents(rq));
 		// Making sure n != 0
 		if(arrival.size()==0) {
-			System.out.println("time <0>ms: Simulator ended for <SRT> [Q empty]");
+			System.out.println("time <0>ms: Simulator ended for SRT "+printQueueContents(rq));
 			return;
 		}
-		
-		PriorityQueue<Process> pq = new PriorityQueue<Process>(new SRTComparator());
+	
 		Process p = arrival.poll();
 		int count = p.getArrivalTime();
-		pq.add(p);
-		System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(pq));
-		p = pq.poll();
-		while((!arrival.isEmpty()||!pq.isEmpty())||p.getNumBurst()!=0){
+		rq.add(p);
+		System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
+		p = rq.poll();
+		while((!arrival.isEmpty()||!rq.isEmpty())||p.getNumBurst()!=0){
 			// Add all the SRTProcess with the same arrival time
 			while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) {
 				Process newProcess;
 				newProcess = arrival.poll();
-				pq.add(newProcess);
+				rq.add(newProcess);
 				if(newProcess.getState()!="BLOCKED")
-					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(pq));
+					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
 				else
-					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(pq));
+					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 				newProcess.enterQueue(newProcess.getArrivalTime());
 			}
 			
@@ -59,7 +60,7 @@ public class SRTAlgorithm{
 			if(p.getState()!="RUNNING") {
 				count+=cw/2;
 				p.enterCPU(count);
-				System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(pq));
+				System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(rq));
 			}
 			
 			// Check the next process arrival time vs remaining time of current Process
@@ -74,13 +75,17 @@ public class SRTAlgorithm{
 			if(count==running) {
 				count+=cw/2; // Add context switch to move the Process out
 				p.complete(count);
+				// In case a newProcess arrives during this context switch period
+				while(!arrival.isEmpty()&&arrival.peek().getArrivalTime()<count) {
+					addNewProcess();
+				}
 				// Still more cpu bursts left
 				if(p.getState()!="COMPLETE") {
-					System.out.println("time "+count+"ms: Process "+p.getProcessID()+ " completed a CPU Burst; "+p.getNumBurst()+" bursts to go "+printQueueContents(pq));
-					System.out.println("time "+count+"ms: Recalculated tau = "+p.getTimeGuess()+"ms for process "+p.getProcessID()+" "+printQueueContents(pq));
+					System.out.println("time "+count+"ms: Process "+p.getProcessID()+ " completed a CPU Burst; "+p.getNumBurst()+" bursts to go "+printQueueContents(rq));
+					System.out.println("time "+count+"ms: Recalculated tau = "+p.getTimeGuess()+"ms for process "+p.getProcessID()+" "+printQueueContents(rq));
 					p.resetEnterTime();
 					arrival.add(p);
-					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" switching out of CPU; will block on I/O until time "+p.getArrivalTime()+"ms "+printQueueContents(pq));
+					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" switching out of CPU; will block on I/O until time "+p.getArrivalTime()+"ms "+printQueueContents(rq));
 				}
 				// Completed all the cpu and io bursts, added to arrayList for analysis
 				else {
@@ -88,29 +93,24 @@ public class SRTAlgorithm{
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" terminated.");
 				}
 				// Move onto the next SRTProcess in the ready queue because new SRTProcess didn't arrive yet.
-				if(pq.size()!=0) {
-					p = pq.poll();
+				if(rq.size()!=0) {
+					p = rq.poll();
 				}
 				// If the next process is from the arrival queue
 				else if(arrival.size()!=0) {
 					// Get the process and add it to the ready queue
 					p=arrival.poll();
 					count = p.getArrivalTime();
-					pq.add(p);
+					rq.add(p);
 					if(p.getState()!="BLOCKED")
-						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(pq));
+						System.out.println("time "+p.getArrivalTime()+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
 					else
-						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(pq));
+						System.out.println("time "+p.getArrivalTime()+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 					p.enterQueue(count);
 					while(arrival.size()!=0&&arrival.peek().getArrivalTime()==p.getArrivalTime()) {
-						Process newProcess=arrival.poll();
-						pq.add(newProcess);
-						if(newProcess.getState()!="BLOCKED")
-							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(pq));
-						else
-							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(pq));
+						addNewProcess();
 					}
-					p=pq.poll();
+					p=rq.poll();
 				}
 			}
 			else { // new SRTProcess arrives before the current SRTProcess finish
@@ -118,25 +118,38 @@ public class SRTAlgorithm{
 				// A preemption is needed
 				if(arrival.peek().getTimeGuess()<remain) {
 					count+=cw/2;
+					while(arrival.peek().getArrivalTime()<count)
+						addNewProcess();
 					p.enterQueue(count);
-					pq.add(p);
-					System.out.println("time "+count+"ms: Process "+arrival.peek().getProcessID()+" (tau "+arrival.peek().getCPUBurstTime()+"ms) completed I/O and will preempt "+p.getProcessID()+" "+printQueueContents(pq));
+					rq.add(p);
+					System.out.println("time "+count+"ms: Process "+arrival.peek().getProcessID()+" (tau "+arrival.peek().getCPUBurstTime()+"ms) completed I/O and will preempt "+p.getProcessID()+" "+printQueueContents(rq));
 					p=arrival.poll();
 				}
 				// The new SRTProcess will not cause preemption, so just add it to the queue
 				else {
 					Process newProcess = arrival.poll();
-					pq.add(newProcess);
+					rq.add(newProcess);
 					if(newProcess.getState()!="BLOCKED")
-						System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) arrived;added to ready queue "+newProcess.getState()+printQueueContents(pq));
+						System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) arrived;added to ready queue "+newProcess.getState()+printQueueContents(rq));
 					else
-						System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(pq));
+						System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 					newProcess.enterQueue(count);
 				}
 			}
 		}
-		System.out.println("time <"+count+">ms: Simulator ended for <SRT> [Q empty]");
+		System.out.println("time "+count+"ms: Simulator ended for <SRT> "+printQueueContents(rq));
 	}
+	
+	private void addNewProcess() {
+		Process newProcess = arrival.poll();
+		this.rq.add(newProcess);
+		if(newProcess.getState()!="BLOCKED")
+			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
+		else
+			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
+		newProcess.enterQueue(newProcess.getArrivalTime());
+	}
+	
 	
 	private String printQueueContents(PriorityQueue<Process> q){
 		Iterator<Process> itr = q.iterator();
