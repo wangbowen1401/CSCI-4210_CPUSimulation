@@ -3,6 +3,7 @@ package cpuSimulation;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 /*
  * A RandomSequence class which will generate 4*n random doubles using the exponential distribution algorithm. 
@@ -41,6 +42,23 @@ class RandomSequence{
 			id++;
 		}
 	}
+	
+	public void printSequenceContent() {
+		Queue<Process> copy = new PriorityQueue<>(sequence);
+		Queue<Process> print = new PriorityQueue<>(new AlphaComparator());
+		
+		
+		while(!copy.isEmpty()) {
+			print.add(copy.poll());
+		}
+		Iterator<Process> it = print.iterator();
+		while(it.hasNext()) {
+			Process p = it.next();
+			System.out.println("Process " + p.getProcessID() + "[NEW] (arrival time " + p.getArrivalTime() + " ms) " + p.getNumBurst() + " CPU bursts");
+		}
+		
+	}
+	
 	
 	// Return a copy of the random sequence 
 	public PriorityQueue<Process>  getSequence(){
