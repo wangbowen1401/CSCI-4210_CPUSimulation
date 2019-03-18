@@ -55,11 +55,9 @@ class RandomSequence{
 			rand=1+rand;
 		double randomValue = -1*Math.log(rand)/this.lambda;
 		if(randomValue<=upper) {
-			//System.out.println("Accepted: "+rand);
 			return rand;
 		}
 		else {
-			//System.out.println("Rejected: "+rand);
 			return random();
 		}
 	}
