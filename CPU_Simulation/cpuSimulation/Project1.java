@@ -26,6 +26,7 @@ public class Project1{
 		System.out.println(SRT);
 		//FCFSAlgorithm FCFS = new FCFSAlgorithm(test,cw);
 		//FCFS.simulate();
+		
 		//System.out.println(FCFS);
 
 		//SJF.simulate();
@@ -34,6 +35,11 @@ public class Project1{
 		//writer.println(SRT);
 		//writer.println(FCFS);
 		//writer.println(RR);
+<<<<<<< Updated upstream
+=======
+		writer.close();
+
+>>>>>>> Stashed changes
 		
 	}
 

@@ -66,7 +66,7 @@ public class SJFAlgorithm {
 		
 		int count = currentProcess.getArrivalTime();
 		System.out.print("time " + count + "ms: " + "Process " + currentProcess.getProcessID() + "(tau " + currentProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
-		Q.add(arrivalQueue.poll());
+		//Q.add(arrivalQueue.poll());
 		printQueueContents(Q);
 		
 		
