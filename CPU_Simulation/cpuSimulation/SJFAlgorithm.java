@@ -211,7 +211,6 @@ public class SJFAlgorithm {
 	
 	private void printQueueContents(PriorityQueue<Process> q) {
 		PriorityQueue<Process> cp = new PriorityQueue<Process>(q);
-		//System.out.println("Queue Size: " + cp.size());
 		if(cp.isEmpty()) {
 			System.out.println("[Q <empty>]");
 			return;
@@ -221,7 +220,6 @@ public class SJFAlgorithm {
 			System.out.print(" " + cp.poll().getProcessID());			
 		}
 		System.out.println("]");
-	
 	}
 	
 	

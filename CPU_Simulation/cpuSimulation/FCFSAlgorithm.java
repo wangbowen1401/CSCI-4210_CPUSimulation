@@ -1,7 +1,6 @@
 package cpuSimulation;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -38,9 +37,9 @@ public class FCFSAlgorithm {
 			while(arrival.size()>0&&count==arrival.peek().getArrivalTime()) { 
 				Process newProcess = arrival.poll();
 				rq.add(newProcess);
-				if(newProcess.getState()!="BLOCKED")
+				if(newProcess.getState()!="BLOCKED"&&count<=1)
 					System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-				else
+				else if(count<=1)
 					System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 				newProcess.enterQueue(newProcess.getArrivalTime());
 			}
@@ -51,7 +50,8 @@ public class FCFSAlgorithm {
 				count+=cw/2;
 				while(arrival.size()>0&&count>=arrival.peek().getArrivalTime())
 					addNewProcess();
-				System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.getRemainingTime()+"ms burst "+printQueueContents(rq));
+				if(count<=1)
+					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.getRemainingTime()+"ms burst "+printQueueContents(rq));
 			}
 			
 			int running = p.getRemainingTime()+p.getEnterTime();
@@ -64,16 +64,19 @@ public class FCFSAlgorithm {
 				p.complete(count);
 				// Still more cpu bursts left
 				if(p.getState()!="COMPLETE") {
-					System.out.println("time "+count+"ms: Process "+p.getProcessID()+ " completed a CPU Burst; "+p.getNumBurst()+" bursts to go "+printQueueContents(rq));
-					System.out.println("time "+count+"ms: Recalculated tau = "+p.getTimeGuess()+"ms for process "+p.getProcessID()+" "+printQueueContents(rq));
+					if(count<=1) {
+						System.out.println("time "+count+"ms: Process "+p.getProcessID()+ " completed a CPU Burst; "+p.getNumBurst()+" bursts to go "+printQueueContents(rq));
+						System.out.println("time "+count+"ms: Recalculated tau = "+p.getTimeGuess()+"ms for process "+p.getProcessID()+" "+printQueueContents(rq));
+					}
 					p.resetEnterTime();
 					arrival.add(p);
-					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" switching out of CPU; will block on I/O until time "+p.getArrivalTime()+"ms "+printQueueContents(rq));
+					if(count<=1)
+						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" switching out of CPU; will block on I/O until time "+p.getArrivalTime()+"ms "+printQueueContents(rq));
 				}
 				// Completed all the cpu and io bursts, added to arrayList for analysis
 				else {
 					done.add(p);
-					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" terminated.");
+					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" terminated "+printQueueContents(rq));
 				}
 				count+=cw/2;
 				// Move onto the next Process in the ready queue because new Process didn't arrive yet.
@@ -84,17 +87,17 @@ public class FCFSAlgorithm {
 					p=arrival.poll();
 					count = p.getArrivalTime();
 					rq.add(p);
-					if(p.getState()!="BLOCKED")
+					if(p.getState()!="BLOCKED"&&count<=1)
 						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-					else
+					else if(count<=1)
 						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 					p.enterQueue(count);
 					while(arrival.size()!=0&&arrival.peek().getArrivalTime()==p.getArrivalTime()) {
 						Process newProcess=arrival.poll();
 						rq.add(newProcess);
-						if(newProcess.getState()!="BLOCKED")
+						if(newProcess.getState()!="BLOCKED"&&count<=1)
 							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-						else
+						else if(count<=1)
 							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 					}
 					p=rq.poll();
@@ -111,28 +114,28 @@ public class FCFSAlgorithm {
 	private void addNewProcess() {
 		Process newProcess = arrival.poll();
 		this.rq.add(newProcess);
-		if(newProcess.getState()!="BLOCKED")
+		if(newProcess.getState()!="BLOCKED"&&newProcess.getArrivalTime()<=1)
 			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-		else
+		else if(newProcess.getArrivalTime()<=1)
 			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 		newProcess.enterQueue(newProcess.getArrivalTime());
 	}
 	
-	private String printQueueContents(Queue<Process> q){
-		Iterator<Process> itr = q.iterator();
+	private String printQueueContents(Queue<Process> q) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("[Q");
-		if(q.isEmpty()) {
-			sb.append(" <empty>]");
+		Queue<Process> cp = new LinkedList<Process>(q);
+		if(cp.isEmpty()) {
+			sb.append("[Q <empty>]");
 			return sb.toString();
 		}
-		while(itr.hasNext()) {
-			Process p = itr.next();
-			sb.append(" "+p.getProcessID());
+		sb.append("[Q");
+		while(!cp.isEmpty()){
+			sb.append(" " + cp.poll().getProcessID());			
 		}
 		sb.append("]");
 		return sb.toString();
 	}
+	
 	
 	private double getAvgCPUBurst() {
 		long total = 0;
@@ -152,7 +155,7 @@ public class FCFSAlgorithm {
 		double total = 0;
 		int entries=0;
 		for(Process p : done) {
-			entries = p.getNumCPUBurstRecord();
+			entries += p.getNumCPUBurstRecord();
 			for(double w:p.waitTime)
 				total+=w;
 		}
@@ -165,9 +168,9 @@ public class FCFSAlgorithm {
 		double total = 0;
 		int entries=0;
 		for(Process p : done) {
-			entries = p.getNumCPUBurstRecord();
-			for(double w:p.getTurnaroundTime())
-				total+=w;
+			entries += p.getNumCPUBurstRecord();
+			for(int i:p.getTurnaroundTime())
+				total+=i;
 		}
 		if(entries==0)
 			return 0;

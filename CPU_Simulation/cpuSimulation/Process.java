@@ -12,7 +12,7 @@ class AlphaComparator implements Comparator<Process>{
 	
 	@Override
 	public int compare(Process a, Process b) {
-		return a.getProcessID() - b.getProcessID();
+		return a.getProcessID()<b.getProcessID()?-1:1;
 	}
 }
 class ArrivalComparator implements Comparator<Process>{
@@ -75,6 +75,7 @@ public  class Process{
 		
 		processID = id;	
 		waitTime = new int[numCPUBurstRecord];
+		Arrays.fill(waitTime, 0);
 		turnaroundTime = new int[numCPUBurstRecord];
 		int i=0;
 		for(Integer burst:cpuBurstTime) {
@@ -82,7 +83,6 @@ public  class Process{
 			i++;
 		}
 
-		Arrays.fill(waitTime, 0);
 		enterTime = -1;
 		numPreempt = 0;
 		numContextSwitch=0;
@@ -188,13 +188,15 @@ public  class Process{
 	//////////////////////////////////////////// Simulation Helpers ///////////////////////////////////////////
 	public void enterCPU(int time) {
 		this.state= "RUNNING";
-		if(enterTime!=-1)
+		if(enterTime!=-1) {
 			waitTime[numCPUBurst-1]+=time-enterTime;
+		}
 		turnaroundTime[numCPUBurst-1]+=cw/2;
 		enterTime = time+cw/2;// Refers to when the process enter the CPU
 	}
 	
 	public void enterQueue(int time) {
+		state= "READY";
 		// If the process was in the CPU
 		if(state == "RUNNING"&&enterTime!=-1) {
 			turnaroundTime[numCPUBurst-1]+=cw/2;
@@ -202,15 +204,19 @@ public  class Process{
 			burstTimeGuess-=(time-enterTime);
 			numContextSwitch++;
 			numPreempt++;
+			enterTime = time+cw/2;
 		}
-		state= "READY";
-		enterTime = time;
+		else
+			enterTime = time;
 	}
 	
 	// For SRT when CPU burst is complete
 	public void complete(int time) {
 		numCPUBurst--;
 		turnaroundTime[numCPUBurst]+=waitTime[numCPUBurst]+cw/2;
+//		for(int i:turnaroundTime)
+//			System.out.print(i+" ");
+//		System.out.println();
 		if(numCPUBurst>0) {
 			burstTimeGuess = (int)((1-alpha)*burstTimeGuessRecord+alpha*cpuBurstTime.getFirst());
 			cpuBurstTime.poll();
