@@ -16,7 +16,7 @@ public class Project1{
 		
 		double lambda =0.001;
 		double upper = 3000;
-		int n = 1;
+		int n = 2;
 		long seed = 50;
 		int cw = 8;
 		double alpha = 0.5;
