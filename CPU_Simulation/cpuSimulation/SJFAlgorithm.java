@@ -23,7 +23,7 @@ public class SJFAlgorithm {
 	private ArrayList<Process> completedProcesses;
 	private double cw;
 	
-	public SJFAlgorithm(RandomSequence test,double alpha,double cw) {
+	public SJFAlgorithm(RandomSequence test,double cw) {
 		arrivalQueue = test.getSequence();
 		this.cw=cw;
 		completedProcesses = new ArrayList<Process>();	
@@ -83,9 +83,8 @@ public class SJFAlgorithm {
 			}
 			
 			if(currentProcess.getState()!="RUNNING") {
-				//Q.poll();
-				count+=cw/2;
 				currentProcess.enterCPU(count);
+				count+=cw/2;
 				System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst ");
 				printQueueContents(Q);
 			}
