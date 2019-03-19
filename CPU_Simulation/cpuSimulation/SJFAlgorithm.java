@@ -22,11 +22,13 @@ public class SJFAlgorithm {
 	private PriorityQueue<Process> arrivalQueue;
 	private ArrayList<Process> completedProcesses;
 	private double cw;
+	private double avgCPUBurst;
 	
-	public SJFAlgorithm(RandomSequence test,double alpha,double cw) {
+	public SJFAlgorithm(RandomSequence test,double cw) {
 		arrivalQueue = test.getSequence();
 		this.cw=cw;
-		completedProcesses = new ArrayList<Process>();	
+		completedProcesses = new ArrayList<Process>();
+		avgCPUBurst = this.getAvgCPUBurst();
 	}
 	
 	
@@ -83,10 +85,10 @@ public class SJFAlgorithm {
 			}
 			
 			if(currentProcess.getState()!="RUNNING") {
-				//Q.poll();
+				Q.poll();
 				count+=cw/2;
 				currentProcess.enterCPU(count);
-				System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst ");
+				System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst 111");
 				printQueueContents(Q);
 			}
 			
@@ -94,6 +96,7 @@ public class SJFAlgorithm {
 			int in =Integer.MAX_VALUE;
 			if(arrivalQueue.size()>0)
 				in =  arrivalQueue.peek().getArrivalTime();
+			printQueueContents(arrivalQueue);
 			count = Math.min(running, in);
 
 			if(count==running) {
@@ -114,11 +117,11 @@ public class SJFAlgorithm {
 				
 				currentProcess.complete(count);
 				if(currentProcess.getState()!="COMPLETE") {
-					System.out.print("time "+ (count-(cw/2)) + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
+					System.out.print("time "+ (int)(count-(cw/2)) + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
 					printQueueContents(Q);
-					System.out.print("time " + (count - (cw/2)) + "ms: Recalculated tau = " + currentProcess.getTimeGuess() + " for Process " + currentProcess.getProcessID() + " ");
+					System.out.print("time " + (int)(count - (cw/2)) + "ms: Recalculated tau = " + currentProcess.getTimeGuess() + " for Process " + currentProcess.getProcessID() + " ");
 					printQueueContents(Q);
-					System.out.print("time "+ (count-(cw/2)) + " ms: Process " + currentProcess.getProcessID() + " switching out of CPU; will block on I/O until time "+ currentProcess.getArrivalTime() + " ");
+					System.out.print("time "+ (int)(count-(cw/2)) + "ms: Process " + currentProcess.getProcessID() + " switching out of CPU; will block on I/O until time "+ currentProcess.getArrivalTime() + " ");
 					printQueueContents(Q);
 
 					
@@ -126,6 +129,7 @@ public class SJFAlgorithm {
 					currentProcess.resetEnterTime();
 					
 					arrivalQueue.add(currentProcess);
+					System.out.println(currentProcess.getArrivalTime());
 					
 				}
 				else {
@@ -190,9 +194,11 @@ public class SJFAlgorithm {
 	private double getAvgCPUBurst() {
 		double total = 0;
 		int entries=0;
-		for(Process currentProcess : completedProcesses) {
-			entries = currentProcess.numCPUBurstRecord;
-			total += currentProcess.getCPUBurstTime()*currentProcess.numCPUBurstRecord;
+		for(Process currentProcess : arrivalQueue) {
+			entries += currentProcess.getNumCPUBurstRecord();
+			for(Integer time : currentProcess.getCPUBurst()) {
+				total+=time;
+			}
 		}
 		return total/entries;
 	}
@@ -244,7 +250,7 @@ public class SJFAlgorithm {
 		sb.append("Algorithm SJF\n");
 		
 		// Values that need to be calculated
-		double avgCPUBurst = this.getAvgCPUBurst();
+		double avgCPUBurst = this.avgCPUBurst;
 		double avgWaitTime = this.getAvgWaitTime();
 		double avgTurnaroundTime = this.getAvgTurnaroundTime();
 		int numCW = this.getTotalCW();
