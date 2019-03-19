@@ -39,11 +39,13 @@ public  class Process{
     int arrivalTime;
 	int enterTime; // When the process enter ready queue or cpu
 	int burstTimeGuess;
+	int burstTimeGuessRecord;
 	int numCPUBurst;
 	int numCPUBurstRecord;
 	int remainingTime;
 	int numPreempt;
 	int numContextSwitch;
+	int cw;
 	
 	int [] waitTime;
 	int [] turnaroundTime;
@@ -52,11 +54,13 @@ public  class Process{
 	
 	
 	// Need getters and setters for changing variables
-	public Process(char id,int arrivalTime,int numCPUBurst,LinkedList<Integer> cpuBurstTime,LinkedList<Integer> ioBurstTime,double lambda,double alpha){
+	public Process(char id,int arrivalTime,int numCPUBurst,LinkedList<Integer> cpuBurstTime,LinkedList<Integer> ioBurstTime,int cw,double lambda,double alpha){
 		burstTimeGuess = (int)(1/lambda);
+		burstTimeGuessRecord = burstTimeGuess;
 		this.alpha = alpha;
 		this.arrivalTime = arrivalTime;
 		this.numCPUBurst =numCPUBurst;
+		this.cw=cw;
 		numCPUBurstRecord = numCPUBurst;
 		
 		if(numCPUBurst==0) 
@@ -71,7 +75,13 @@ public  class Process{
 		
 		processID = id;	
 		waitTime = new int[numCPUBurstRecord];
-		turnaroundTime = new int [numCPUBurstRecord];
+		turnaroundTime = new int[numCPUBurstRecord];
+		int i=0;
+		for(Integer burst:cpuBurstTime) {
+			turnaroundTime[i]=(int)burst;
+			i++;
+		}
+			
 		Arrays.fill(waitTime, 0);
 		enterTime = -1;
 		numPreempt = 0;
@@ -82,7 +92,8 @@ public  class Process{
 	
 	///////////////////////////////// Getters and Setters/////////////////////////////////
 	public LinkedList<Integer> getCPUBurst(){
-		return new LinkedList<Integer>(cpuBurstTime);
+		LinkedList<Integer> copy = new LinkedList<Integer>(cpuBurstTime);
+		return copy;
 	}
 	
 	public LinkedList<Integer> getIOBurst(){
@@ -146,13 +157,16 @@ public  class Process{
 		this.state= "RUNNING";
 		if(enterTime!=-1)
 			waitTime[numCPUBurst-1]+=time-enterTime;
+		turnaroundTime[numCPUBurst-1]+=cw/2;
 		enterTime = time;// Refers to when the process enter the CPU
 	}
 	
 	public void enterQueue(int time) {
 		// If the process was in the CPU
 		if(state == "RUNNING"&&enterTime!=-1) {
+			turnaroundTime[numCPUBurst-1]+=cw/2;
 			remainingTime -=(time-enterTime); 
+			burstTimeGuess-=(time-enterTime);
 			numContextSwitch++;
 			numPreempt++;
 		}
@@ -163,13 +177,14 @@ public  class Process{
 	// For SRT when CPU burst is complete
 	public void complete(int time) {
 		numCPUBurst--;
-		turnaroundTime[numCPUBurst]+=waitTime[numCPUBurst];
+		turnaroundTime[numCPUBurst]+=waitTime[numCPUBurst]+cw/2;
 		if(numCPUBurst>0) {
 			cpuBurstTime.poll();
 			state="BLOCKED";
 			remainingTime = cpuBurstTime.getFirst();
 			arrivalTime = ioBurstTime.poll()+time;
-			burstTimeGuess = (int)((1-alpha)*burstTimeGuess+alpha*cpuBurstTime.getFirst());
+			burstTimeGuess = (int)((1-alpha)*burstTimeGuessRecord+alpha*cpuBurstTime.getFirst());
+			burstTimeGuessRecord = burstTimeGuess;
 		}
 		else {
 			state="COMPLETE";

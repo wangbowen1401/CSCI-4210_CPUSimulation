@@ -16,18 +16,17 @@ public class Project1{
 		
 		double lambda =0.001;
 		double upper = 3000;
-		int n = 10;
-		long seed = 70;
-		double cw = 8;
+		int n = 1;
+		long seed = 50;
+		int cw = 8;
 		double alpha = 0.5;
-		RandomSequence test = new RandomSequence(seed,lambda,alpha,upper,n);
-		//SRTAlgorithm SRT = new SRTAlgorithm(test,cw);
-		//SRT.simulate();
-
-		//System.out.println(SRT);
-		FCFSAlgorithm FCFS = new FCFSAlgorithm(test,cw);
-		FCFS.simulate();
-		System.out.println(FCFS);
+		RandomSequence test = new RandomSequence(seed,cw,lambda,alpha,upper,n);
+		SRTAlgorithm SRT = new SRTAlgorithm(test,cw);
+		SRT.simulate();
+		System.out.println(SRT);
+		//FCFSAlgorithm FCFS = new FCFSAlgorithm(test,cw);
+		//FCFS.simulate();
+		//System.out.println(FCFS);
 
 		//SJF.simulate();
 		//System.out.println(SJF);

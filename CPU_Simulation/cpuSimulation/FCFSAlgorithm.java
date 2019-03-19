@@ -10,14 +10,16 @@ public class FCFSAlgorithm {
 	private PriorityQueue<Process> arrival;
 	private Queue<Process> rq;
 	private ArrayList<Process> done;
-	private double cw;
+	private final double avgCPUBurst;
+	private int cw;
 	
-	public FCFSAlgorithm(RandomSequence test,double cw) {
+	public FCFSAlgorithm(RandomSequence test,int cw) {
 		arrival = test.getSequence();
 		this.cw = cw;
 		done = new ArrayList<Process>();
 		this.rq = new LinkedList<Process>();
 		test.printSequenceContent();
+		avgCPUBurst = this.getAvgCPUBurst();
 	}
 	
 	public void simulate(){
@@ -59,8 +61,7 @@ public class FCFSAlgorithm {
 			count = Math.min(running, in);
 			
 			if(count==running) {
-				count+=cw/2;
-				p.complete(count);
+				p.complete(count+cw/2);
 				while(!arrival.isEmpty()&&arrival.peek().getArrivalTime()<count) 
 					addNewProcess();
 				// Still more cpu bursts left
@@ -76,6 +77,7 @@ public class FCFSAlgorithm {
 					done.add(p);
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" terminated.");
 				}
+				count+=cw/2;
 				// Move onto the next Process in the ready queue because new Process didn't arrive yet.
 				if(rq.size()!=0) {
 					p = rq.poll();
@@ -135,13 +137,17 @@ public class FCFSAlgorithm {
 	}
 	
 	private double getAvgCPUBurst() {
-		double total = 0;
+		long total = 0;
 		int entries=0;
-		for(Process p : done) {
+		for(Process p : arrival) {
 			entries += p.getNumCPUBurstRecord();
-			total += p.getCPUBurstTime()*p.getNumCPUBurstRecord();
+			for(Integer time:p.getCPUBurst()){
+				total+=time;
+			}
 		}
-		return total/entries;
+		if(entries==0)
+			return 0;
+		return (double)total/entries;
 	}
 	
 	private double getAvgWaitTime() {
@@ -191,7 +197,7 @@ public class FCFSAlgorithm {
 		sb.append("Algorithm FCFS\n");
 		
 		// Values that need to be calculated
-		double avgCPUBurst = this.getAvgCPUBurst();
+		double avgCPUBurst = this.avgCPUBurst;
 		double avgWaitTime = this.getAvgWaitTime();
 		double avgTurnaroundTime = this.getAvgTurnaroundTime();
 		int numCW = this.getTotalCW();

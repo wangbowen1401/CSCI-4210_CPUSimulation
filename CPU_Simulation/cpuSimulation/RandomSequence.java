@@ -17,7 +17,7 @@ class RandomSequence{
  	private final double lambda;
 	private final double upper;
 	
-	RandomSequence(long seed,double lambda,double alpha,double upper,int n){
+	RandomSequence(long seed,int cw,double lambda,double alpha,double upper,int n){
 		sequence = new PriorityQueue<Process>(new ArrivalComparator());
 		this.seed= seed << 16;
 		this.seed = this.seed + 13070;
@@ -37,7 +37,7 @@ class RandomSequence{
 					ioBurstTime.add(b);
 				}
 			}
-			Process p = new Process(id,arrivalTime,numCPUBurst,cpuBurstTime,ioBurstTime,lambda,alpha);
+			Process p = new Process(id,arrivalTime,numCPUBurst,cpuBurstTime,ioBurstTime,cw,lambda,alpha);
 			sequence.add(p);
 			id++;
 		}
@@ -46,8 +46,6 @@ class RandomSequence{
 	public void printSequenceContent() {
 		Queue<Process> copy = new PriorityQueue<>(sequence);
 		Queue<Process> print = new PriorityQueue<>(new AlphaComparator());
-		
-		
 		while(!copy.isEmpty()) {
 			print.add(copy.poll());
 		}
