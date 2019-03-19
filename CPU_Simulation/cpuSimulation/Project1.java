@@ -25,20 +25,20 @@ public class Project1{
 		RandomSequence seq3 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		RandomSequence seq4 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		
-		SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
-		SRT.simulate();
+		//SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
+		//SRT.simulate();
 		//System.out.println(SRT);
 		
-		FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
-		FCFS.simulate();
+		//FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
+		//FCFS.simulate();
 		//System.out.println(FCFS);
 		
 		SJFAlgorithm SJF = new SJFAlgorithm(seq3,cw);
 		SJF.simulate();
 		//System.out.println(SJF);
 		writer.println(SJF);
-		writer.println(SRT);
-		writer.println(FCFS);
+		//writer.println(SRT);
+		//writer.println(FCFS);
 		//writer.println(RR);
 		writer.close();
 
