@@ -14,9 +14,9 @@ public class Project1{
 		//System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream("out.txt"))));
 		PrintWriter writer  = new PrintWriter("simout.txt","UTF-8");
 		
-		double lambda =0.0001;
+		double lambda =0.001;
 		double upper = 3000;
-		int n = 20;
+		int n = 2;
 		long seed = 50;
 		int cw = 8;
 		double alpha = 0.5;
@@ -24,13 +24,15 @@ public class Project1{
 		RandomSequence seq = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		RandomSequence seq2 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		RandomSequence seq3 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
-		//RandomSequence seq4 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
+		RandomSequence seq4 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		
-		SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
-		SRT.simulate();
+//		SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
+//		SRT.simulate();
 		//System.out.println();
-		System.out.println(SRT);
-		
+//		System.out.println(SRT);
+		RRAlgorithm RR = new RRAlgorithm(seq4,cw, 100, "BEGINNING");
+		RR.simulate();
+		System.out.println(RR);
 		/*
 		FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
 		FCFS.simulate();
