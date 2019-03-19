@@ -48,20 +48,22 @@ public class SJFAlgorithm {
 			System.out.println("Process " + p.getProcessID() + "[NEW] (arrival time " + p.getArrivalTime() + " ms) " + p.getNumBurst() + " CPU bursts");
 		}
 		
-		
+		Q = new PriorityQueue<Process>(new SJFComparator());
+		System.out.print("time 0ms: Simulator started for SJF ");
+		printQueueContents(Q);
+
+
 		if(arrivalQueue.isEmpty()) {
-			System.out.println("time <"+0+">ms: Simulator ended for <SJF> [Q empty]");
+			System.out.println("time "+0+"ms: Simulator ended for <SJF> [Q empty]");
 
 			return;
 		}
 			
-		Q = new PriorityQueue<Process>(new SJFComparator());
+		
 		
 		Process currentProcess = arrivalQueue.peek();
 		
 		//System.out.println("Process " + currentProcess.getProcessID() + "[NEW] (arrival time " + currentProcess.getArrivalTime() + " ms) " + currentProcess.getNumBurst() + " CPU bursts");
-		System.out.print("time 0ms: Simulator started for SJF");
-		printQueueContents(Q);
 		Q.add(arrivalQueue.poll());
 		
 		
@@ -88,7 +90,7 @@ public class SJFAlgorithm {
 				Q.poll();
 				count+=cw/2;
 				currentProcess.enterCPU(count);
-				System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst 111");
+				System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst ");
 				printQueueContents(Q);
 			}
 			
@@ -96,7 +98,7 @@ public class SJFAlgorithm {
 			int in =Integer.MAX_VALUE;
 			if(arrivalQueue.size()>0)
 				in =  arrivalQueue.peek().getArrivalTime();
-			printQueueContents(arrivalQueue);
+			//printQueueContents(arrivalQueue);
 			count = Math.min(running, in);
 
 			if(count==running) {
@@ -105,10 +107,10 @@ public class SJFAlgorithm {
 					Process p = arrivalQueue.peek();
 					Q.add(arrivalQueue.poll());
 					if(p.getState() == "BLOCKED") {
-						System.out.print("time " + count + "ms:" + "Process " + p.getProcessID() + "(tau " + p.getTimeGuess() + "ms) completed I/O; added to ready queue " );
+						System.out.print("time " + count + "ms:" + " Process " + p.getProcessID() + " (tau " + p.getTimeGuess() + "ms) completed I/O; added to ready queue " );
 						printQueueContents(Q);
 					}else {
-						System.out.print("time " + count + "ms: Process " + p.getProcessID() + "(tau " + p.getTimeGuess() + "ms) arrived; added to ready queue ");
+						System.out.print("time " + count + "ms: Process " + p.getProcessID() + " (tau " + p.getTimeGuess() + "ms) arrived; added to ready queue ");
 						printQueueContents(Q);
 					}				
 					p.enterQueue(p.getArrivalTime());
@@ -129,7 +131,7 @@ public class SJFAlgorithm {
 					currentProcess.resetEnterTime();
 					
 					arrivalQueue.add(currentProcess);
-					System.out.println(currentProcess.getArrivalTime());
+					//System.out.println(currentProcess.getArrivalTime());
 					
 				}
 				else {
@@ -146,10 +148,10 @@ public class SJFAlgorithm {
 					count = currentProcess.getArrivalTime();
 					Q.add(arrivalQueue.poll());
 					if(currentProcess.getState() == "BLOCKED") {
-						System.out.print("time " + count + "ms:" + "Process " + currentProcess.getProcessID() + "(tau " + currentProcess.getTimeGuess() + "ms) completed I/O; added to ready queue " );
+						System.out.print("time " + count + "ms:" + " Process " + currentProcess.getProcessID() + " (tau " + currentProcess.getTimeGuess() + "ms) completed I/O; added to ready queue " );
 						printQueueContents(Q);
 					}else {
-						System.out.print("time " + count + "ms: Process " + currentProcess.getProcessID() + "(tau " + currentProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
+						System.out.print("time " + count + "ms: Process " + currentProcess.getProcessID() + " (tau " + currentProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
 						printQueueContents(Q);
 					}
 					
@@ -171,7 +173,7 @@ public class SJFAlgorithm {
 				
 			}
 		}
-		System.out.println("time <"+count+">ms: Simulator ended for <SJF> [Q empty]");
+		System.out.println("time "+count+"ms: Simulator ended for <SJF> [Q empty]");
 	}
 	
 	
