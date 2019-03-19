@@ -23,6 +23,7 @@ public class SJFAlgorithm {
 	private ArrayList<Process> completedProcesses;
 	private double cw;
 	private double avgCPUBurst;
+	private boolean neverStarted = false;
 	
 	public SJFAlgorithm(RandomSequence test,double cw) {
 		arrivalQueue = test.getSequence();
@@ -54,8 +55,8 @@ public class SJFAlgorithm {
 
 
 		if(arrivalQueue.isEmpty()) {
-			System.out.println("time "+0+"ms: Simulator ended for <SJF> [Q empty]");
-
+			System.out.println("time "+0+"ms: Simulator ended for SJF [Q <empty>]");
+			neverStarted = true;
 			return;
 		}
 			
@@ -81,17 +82,26 @@ public class SJFAlgorithm {
 			while(arrivalQueue.size()>0&&count==arrivalQueue.peek().getArrivalTime()) { 
 				newProcess = arrivalQueue.poll();
 				newProcess.enterQueue(count);
-				System.out.print("time " + count + "ms: " + "Process " + newProcess.getProcessID() + "(tau " + newProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
-				printQueueContents(Q);
+				if(count <= 999) {
+					System.out.print("time " + count + "ms: " + "Process " + newProcess.getProcessID() + "(tau " + newProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
+					printQueueContents(Q);
 
+				}
 			}
 			
 			if(currentProcess.getState()!="RUNNING") {
 				Q.poll();
 				currentProcess.enterCPU(count);
+
+				if(count <= 999) {
+					System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst ");
+					printQueueContents(Q);
+				}
+
 				count+=cw/2;
 				System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst ");
 				printQueueContents(Q);
+
 			}
 			
 			int running = currentProcess.getRemainingTime()+currentProcess.getEnterTime();
@@ -102,16 +112,19 @@ public class SJFAlgorithm {
 			count = Math.min(running, in);
 
 			if(count==running) {
-				count+=cw/2;
 				while( arrivalQueue.size() > 0 && arrivalQueue.peek().getArrivalTime() < count ) {
 					Process p = arrivalQueue.peek();
 					Q.add(arrivalQueue.poll());
 					if(p.getState() == "BLOCKED") {
-						System.out.print("time " + count + "ms:" + " Process " + p.getProcessID() + " (tau " + p.getTimeGuess() + "ms) completed I/O; added to ready queue " );
-						printQueueContents(Q);
+						if(count <= 999) {
+							System.out.print("time " + count + "ms:" + " Process " + p.getProcessID() + " (tau " + p.getTimeGuess() + "ms) completed I/O; added to ready queue " );
+							printQueueContents(Q);
+						}
 					}else {
-						System.out.print("time " + count + "ms: Process " + p.getProcessID() + " (tau " + p.getTimeGuess() + "ms) arrived; added to ready queue ");
-						printQueueContents(Q);
+						if(count <= 999) {
+							System.out.print("time " + count + "ms: Process " + p.getProcessID() + " (tau " + p.getTimeGuess() + "ms) arrived; added to ready queue ");
+							printQueueContents(Q);
+						}
 					}				
 					p.enterQueue(p.getArrivalTime());
 				}
@@ -119,12 +132,20 @@ public class SJFAlgorithm {
 				
 				currentProcess.complete(count);
 				if(currentProcess.getState()!="COMPLETE") {
-					System.out.print("time "+ (int)(count-(cw/2)) + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
+					System.out.print("time "+ count + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
 					printQueueContents(Q);
-					System.out.print("time " + (int)(count - (cw/2)) + "ms: Recalculated tau = " + currentProcess.getTimeGuess() + "ms for Process " + currentProcess.getProcessID() + " ");
+					System.out.print("time " + count + "ms: Recalculated tau = " + currentProcess.getTimeGuess() + "ms for Process " + currentProcess.getProcessID() + " ");
 					printQueueContents(Q);
-					System.out.print("time "+ (int)(count-(cw/2)) + "ms: Process " + currentProcess.getProcessID() + " switching out of CPU; will block on I/O until time "+ currentProcess.getArrivalTime() + " ");
+					System.out.print("time "+ count+ "ms: Process " + currentProcess.getProcessID() + " switching out of CPU; will block on I/O until time "+ currentProcess.getArrivalTime() + " ");
 					printQueueContents(Q);
+					if(count <= 999) {
+						System.out.print("time "+ count + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
+						printQueueContents(Q);
+						System.out.print("time " + count + "ms: Recalculated tau = " + currentProcess.getTimeGuess() + " for Process " + currentProcess.getProcessID() + " ");
+						printQueueContents(Q);
+						System.out.print("time "+ count + "ms: Process " + currentProcess.getProcessID() + " switching out of CPU; will block on I/O until time "+ currentProcess.getArrivalTime() + " ");
+						printQueueContents(Q);						
+					}
 
 					
 					
@@ -140,6 +161,7 @@ public class SJFAlgorithm {
 					printQueueContents(Q);
 
 				}
+				count+=cw/2;
 				if(!Q.isEmpty()&&running!=in) {
 					currentProcess = Q.poll();
 				}
@@ -148,11 +170,17 @@ public class SJFAlgorithm {
 					count = currentProcess.getArrivalTime();
 					Q.add(arrivalQueue.poll());
 					if(currentProcess.getState() == "BLOCKED") {
-						System.out.print("time " + count + "ms:" + " Process " + currentProcess.getProcessID() + " (tau " + currentProcess.getTimeGuess() + "ms) completed I/O; added to ready queue " );
-						printQueueContents(Q);
+						if(count <= 999) {
+							System.out.print("time " + count + "ms:" + " Process " + currentProcess.getProcessID() + " (tau " + currentProcess.getTimeGuess() + "ms) completed I/O; added to ready queue " );
+							printQueueContents(Q);
+						}
+						
 					}else {
-						System.out.print("time " + count + "ms: Process " + currentProcess.getProcessID() + " (tau " + currentProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
-						printQueueContents(Q);
+						if(count <= 999) {
+							System.out.print("time " + count + "ms: Process " + currentProcess.getProcessID() + " (tau " + currentProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
+							printQueueContents(Q);
+						}
+						
 					}
 					
 					currentProcess = Q.poll();
@@ -164,11 +192,15 @@ public class SJFAlgorithm {
 				Q.add(newProcess);
 
 				if(newProcess.getState() == "BLOCKED") {
-					System.out.print("time " + count + "ms:" + "Process " + newProcess.getProcessID() + "(tau " + newProcess.getTimeGuess() + "ms) completed I/O; added to ready queue " );
-					printQueueContents(Q);
+					if(count <= 999) {
+						System.out.print("time " + count + "ms:" + "Process " + newProcess.getProcessID() + "(tau " + newProcess.getTimeGuess() + "ms) completed I/O; added to ready queue " );
+						printQueueContents(Q);
+					}
 				}else {
-					System.out.print("time " + count + "ms: Process " + newProcess.getProcessID() + "(tau " + newProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
-					printQueueContents(Q);
+					if(count <= 999) {
+						System.out.print("time " + count + "ms: Process " + newProcess.getProcessID() + "(tau " + newProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
+						printQueueContents(Q);
+					}
 				}
 				
 			}
@@ -245,11 +277,25 @@ public class SJFAlgorithm {
 	
 	
 	public String toString(){
+		
 
 		StringBuilder sb = new StringBuilder();
 		
+		
 		// Actual content
 		sb.append("Algorithm SJF\n");
+		if(neverStarted) {
+			sb.append("-- average CPU burst time: "+ String.format("%.3f",0.0));
+			sb.append("\n");
+			sb.append("-- average wait time: "+ String.format("%.3f",0.0));
+			sb.append("\n");
+			sb.append("-- average turnaround time: "+ String.format("%.3f",0.0));
+			sb.append("\n");
+			sb.append("-- total number of context switches: "+ 0.0);
+			sb.append("\n");
+			sb.append("-- total number of preemptions: "+ 0.0);
+			return sb.toString();
+		}
 		
 		// Values that need to be calculated
 		double avgCPUBurst = this.avgCPUBurst;
