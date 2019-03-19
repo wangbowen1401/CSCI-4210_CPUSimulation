@@ -196,7 +196,6 @@ public  class Process{
 	}
 	
 	public void enterQueue(int time) {
-		state= "READY";
 		// If the process was in the CPU
 		if(state == "RUNNING"&&enterTime!=-1) {
 			turnaroundTime[numCPUBurst-1]+=cw/2;
@@ -208,6 +207,7 @@ public  class Process{
 		}
 		else
 			enterTime = time;
+		state= "READY";
 	}
 	
 	// For SRT when CPU burst is complete

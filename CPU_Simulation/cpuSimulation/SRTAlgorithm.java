@@ -48,9 +48,9 @@ public class SRTAlgorithm{
 				Process newProcess;
 				newProcess = arrival.poll();
 				rq.add(newProcess);
-				if(newProcess.getState()!="BLOCKED"&&count==-1)
+				if(newProcess.getState()!="BLOCKED"&&count!=-1)
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-				else if(count==-1)
+				else if(count!=-1)
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 				newProcess.enterQueue(newProcess.getArrivalTime());
 			}
@@ -64,7 +64,7 @@ public class SRTAlgorithm{
 					cwEntry=true;
 					addNewProcess();
 				}
-				if(count==-1)
+				if(count!=-1)
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.getRemainingTime()+"ms burst "+printQueueContents(rq));
 			}
 			
@@ -72,8 +72,10 @@ public class SRTAlgorithm{
 			int running = p.getRemainingTime()+p.getEnterTime();
 			int in =Integer.MAX_VALUE;
 			int queue = Integer.MAX_VALUE;
-			if(arrival.size()>0) 
+			if(arrival.size()>0) {
 				in =  arrival.peek().getArrivalTime();
+				System.out.println("time "+count+"ms: in = "+in);
+			}
 			else if(rq.size()>0&&cwEntry) {
 				queue = count+rq.peek().getCPUBurstTime();
 				cwEntry=false;
@@ -81,6 +83,8 @@ public class SRTAlgorithm{
 			
 			if(Math.min(running, in)<queue)
 				count = Math.min(running, in);
+			else
+				count=queue;
 			
 			// The current process will finish before the new process, just 
 			// finish and deal with context switch
@@ -88,13 +92,13 @@ public class SRTAlgorithm{
 				p.complete(count);
 				// Still more cpu bursts left
 				if(p.getState()!="COMPLETE") {
-					if(count==-1) {
+					if(count!=-1) {
 						System.out.println("time "+count+"ms: Process "+p.getProcessID()+ " completed a CPU Burst; "+p.getNumBurst()+" bursts to go "+printQueueContents(rq));
 						System.out.println("time "+count+"ms: Recalculated tau = "+p.getTimeGuess()+"ms for process "+p.getProcessID()+" "+printQueueContents(rq));
 					}
 					p.resetEnterTime();
 					arrival.add(p);
-					if(count==-1)
+					if(count!=-1)
 						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" switching out of CPU; will block on I/O until time "+p.getArrivalTime()+"ms "+printQueueContents(rq));
 				}
 				// Completed all the cpu and io bursts, added to arrayList for analysis
@@ -114,7 +118,7 @@ public class SRTAlgorithm{
 						addNewProcess();
 					}
 					p.enterCPU(count);
-					if(count==-1)
+					if(count!=-1)
 						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(rq));*/
 				}
 				// If the next process is from the arrival queue
@@ -125,9 +129,9 @@ public class SRTAlgorithm{
 					rq.add(p);
 					
 					// Print the process arrival statements
-					if(p.getState()!="BLOCKED"&& count==-1)
+					if(p.getState()!="BLOCKED"&& count!=-1)
 						System.out.println("time "+p.getArrivalTime()+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-					else if(count==-1)
+					else if(count!=-1)
 						System.out.println("time "+p.getArrivalTime()+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 					p.enterQueue(count);
 					// Take the statement out
@@ -143,9 +147,9 @@ public class SRTAlgorithm{
 				// A preemption is needed
 				if(!arrival.isEmpty()&&arrival.peek().getTimeGuess()<remain) {
 					Process newProcess = arrival.poll();
-					if(p.getState()!="BLOCKED"&&newProcess.getArrivalTime()==-1)
+					if(p.getState()!="BLOCKED"&&newProcess.getArrivalTime()!=-1)
 						System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) will preempt "+p.getProcessID()+" "+printQueueContents(rq));
-					else if(newProcess.getArrivalTime()==-1)
+					else if(newProcess.getArrivalTime()!=-1)
 						System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O and will preempt "+p.getProcessID()+" "+printQueueContents(rq));	
 					while(!arrival.isEmpty()&&newProcess.getArrivalTime()==count)
 						addNewProcess();
@@ -163,7 +167,7 @@ public class SRTAlgorithm{
 			// If a process that arrived during contextswitch completes burst before remainder of the process of a new process arrival
 			else {
 				Process newProcess = rq.peek();
-				if(count==-1)
+				if(count!=-1)
 					System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) will preempt "+p.getProcessID()+" "+printQueueContents(rq));
 				rq.poll();
 				
@@ -173,7 +177,7 @@ public class SRTAlgorithm{
 				rq.add(p);
 				p=newProcess;
 				p.enterCPU(count);
-				if(count==-1)
+				if(count!=-1)
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(rq));
 			}
 		}
@@ -183,9 +187,9 @@ public class SRTAlgorithm{
 	private void addNewProcess() {
 		Process newProcess = arrival.poll();
 		this.rq.add(newProcess);
-		if(newProcess.getState()!="BLOCKED"&&newProcess.getArrivalTime()==-1)
+		if(newProcess.getState()!="BLOCKED"&&newProcess.getArrivalTime()!=-1)
 			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-		else if(newProcess.getArrivalTime()==-1)
+		else if(newProcess.getArrivalTime()!=-1)
 			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 		newProcess.enterQueue(newProcess.getArrivalTime());
 	}
