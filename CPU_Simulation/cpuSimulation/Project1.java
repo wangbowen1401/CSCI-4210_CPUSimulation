@@ -32,11 +32,14 @@ public class Project1{
 		
 		//SJFAlgorithm SJF = new SJFAlgorithm(test,cw);
 		//SJF.simulate();
+
 		//System.out.println(SJF);
 		//writer.println(SJF);
 		//writer.println(SRT);
 		//writer.println(FCFS);
 		//writer.println(RR);
+		writer.close();
+
 		
 	}
 

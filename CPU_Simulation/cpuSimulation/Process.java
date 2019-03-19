@@ -169,6 +169,7 @@ public  class Process{
 			burstTimeGuess-=(time-enterTime);
 			numContextSwitch++;
 			numPreempt++;
+			System.out.println("\n\n\nPREEMTION\n\n\n");
 		}
 		state= "READY";
 		enterTime = time;
