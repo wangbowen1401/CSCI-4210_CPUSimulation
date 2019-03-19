@@ -16,7 +16,11 @@ public class Project1{
 		
 		double lambda =0.001;
 		double upper = 3000;
+<<<<<<< Updated upstream
 		int n = 20;
+=======
+		int n = 5;
+>>>>>>> Stashed changes
 		long seed = 50;
 		int cw = 8;
 		double alpha = 0.5;
