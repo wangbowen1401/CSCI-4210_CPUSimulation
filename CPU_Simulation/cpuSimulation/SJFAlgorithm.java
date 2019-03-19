@@ -91,12 +91,17 @@ public class SJFAlgorithm {
 			
 			if(currentProcess.getState()!="RUNNING") {
 				Q.poll();
-				count+=cw/2;
 				currentProcess.enterCPU(count);
+
 				if(count <= 999) {
 					System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst ");
 					printQueueContents(Q);
 				}
+
+				count+=cw/2;
+				System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst ");
+				printQueueContents(Q);
+
 			}
 			
 			int running = currentProcess.getRemainingTime()+currentProcess.getEnterTime();

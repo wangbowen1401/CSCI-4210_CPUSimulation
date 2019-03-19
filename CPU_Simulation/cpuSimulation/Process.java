@@ -158,7 +158,7 @@ public  class Process{
 		if(enterTime!=-1)
 			waitTime[numCPUBurst-1]+=time-enterTime;
 		turnaroundTime[numCPUBurst-1]+=cw/2;
-		enterTime = time;// Refers to when the process enter the CPU
+		enterTime = time+cw/2;// Refers to when the process enter the CPU
 	}
 	
 	public void enterQueue(int time) {
@@ -180,11 +180,11 @@ public  class Process{
 		numCPUBurst--;
 		turnaroundTime[numCPUBurst]+=waitTime[numCPUBurst]+cw/2;
 		if(numCPUBurst>0) {
+			burstTimeGuess = (int)((1-alpha)*burstTimeGuessRecord+alpha*cpuBurstTime.getFirst());
 			cpuBurstTime.poll();
 			state="BLOCKED";
 			remainingTime = cpuBurstTime.getFirst();
-			arrivalTime = ioBurstTime.poll()+time;
-			burstTimeGuess = (int)((1-alpha)*burstTimeGuessRecord+alpha*cpuBurstTime.getFirst());
+			arrivalTime = ioBurstTime.poll()+time+cw/2;
 			burstTimeGuessRecord = burstTimeGuess;
 		}
 		else {

@@ -34,7 +34,7 @@ public class SRTAlgorithm{
 		System.out.println("time 0ms: Simulator started for SRT "+printQueueContents(rq));
 		// Making sure n != 0
 		if(arrival.size()==0) {
-			System.out.println("time <0>ms: Simulator ended for SRT "+printQueueContents(rq));
+			System.out.println("time 0ms: Simulator ended for SRT "+printQueueContents(rq));
 			return;
 		}
 		boolean cwEntry = false;
@@ -66,7 +66,7 @@ public class SRTAlgorithm{
 					addNewProcess();
 				}
 				//if(count<=999)
-					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(rq));
+					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.getRemainingTime()+"ms burst "+printQueueContents(rq));
 			}
 			
 			// Check the next process arrival time vs remaining time of current Process
@@ -86,11 +86,7 @@ public class SRTAlgorithm{
 			// The current process will finish before the new process, just 
 			// finish and deal with context switch
 			if(count==running) {
-				if(!p.getIOBurst().isEmpty())
-					System.out.println("I/O burst for: "+p.getIOBurst().getFirst()+"ms");
-				else
-					System.out.print("No more I/O Burst");
-				p.complete(count+cw/2);
+				p.complete(count);
 				// Still more cpu bursts left
 				if(p.getState()!="COMPLETE") {
 					//if(count<=999) {
@@ -114,13 +110,13 @@ public class SRTAlgorithm{
 				}
 				if(rq.size()!=0) {
 					p = rq.poll();
-					while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) {
+					/*while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) {
 						cwEntry=true;
 						addNewProcess();
 					}
 					p.enterCPU(count);
 					//if(count<=999)
-						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(rq));
+						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(rq));*/
 				}
 				// If the next process is from the arrival queue
 				else if(arrival.size()!=0) {
@@ -182,7 +178,7 @@ public class SRTAlgorithm{
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(rq));
 			}
 		}
-		System.out.println("time "+count+"ms: Simulator ended for <SRT> "+printQueueContents(rq));
+		System.out.println("time "+count+"ms: Simulator ended for SRT "+printQueueContents(rq));
 	}
 	
 	private void addNewProcess() {
@@ -248,6 +244,8 @@ public class SRTAlgorithm{
 			for(double w:p.getTurnaroundTime())
 				total+=w;
 		}
+		if(entries==0)
+			return 0;
 		return total/entries;
 	}
 	

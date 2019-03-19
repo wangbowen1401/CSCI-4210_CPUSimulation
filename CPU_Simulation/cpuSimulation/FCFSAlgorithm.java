@@ -25,13 +25,13 @@ public class FCFSAlgorithm {
 	public void simulate(){
 		System.out.println("time 0ms: Simulator started for FCFS [Q <empty>]");
 		if(arrival.size()==0) {
-			System.out.println("time <0>ms: Simulator ended for FCFS [Q <empty>]");
+			System.out.println("time 0ms: Simulator ended for FCFS [Q <empty>]");
 			return;
 		}
 		Process p = arrival.poll();
 		int count = p.getArrivalTime();
 		rq.add(p);
-		System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
+		System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
 		p = rq.poll();
 		while((!arrival.isEmpty()||!rq.isEmpty())||p.getNumBurst()!=0){
 			// Add all the Process with the same arrival time
@@ -39,19 +39,19 @@ public class FCFSAlgorithm {
 				Process newProcess = arrival.poll();
 				rq.add(newProcess);
 				if(newProcess.getState()!="BLOCKED")
-					System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
+					System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
 				else
-					System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
+					System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 				newProcess.enterQueue(newProcess.getArrivalTime());
 			}
 			
 			// The Process enters CPU
 			if(p.getState()!="RUNNING") {
-				count+=cw/2;
 				p.enterCPU(count);
+				count+=cw/2;
 				while(arrival.size()>0&&count>=arrival.peek().getArrivalTime())
 					addNewProcess();
-				System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(rq));
+				System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.getRemainingTime()+"ms burst "+printQueueContents(rq));
 			}
 			
 			int running = p.getRemainingTime()+p.getEnterTime();
@@ -61,9 +61,7 @@ public class FCFSAlgorithm {
 			count = Math.min(running, in);
 			
 			if(count==running) {
-				p.complete(count+cw/2);
-				while(!arrival.isEmpty()&&arrival.peek().getArrivalTime()<count) 
-					addNewProcess();
+				p.complete(count);
 				// Still more cpu bursts left
 				if(p.getState()!="COMPLETE") {
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+ " completed a CPU Burst; "+p.getNumBurst()+" bursts to go "+printQueueContents(rq));
@@ -87,17 +85,17 @@ public class FCFSAlgorithm {
 					count = p.getArrivalTime();
 					rq.add(p);
 					if(p.getState()!="BLOCKED")
-						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
+						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
 					else
-						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
+						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 					p.enterQueue(count);
 					while(arrival.size()!=0&&arrival.peek().getArrivalTime()==p.getArrivalTime()) {
 						Process newProcess=arrival.poll();
 						rq.add(newProcess);
 						if(newProcess.getState()!="BLOCKED")
-							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
+							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
 						else
-							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
+							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 					}
 					p=rq.poll();
 				}
@@ -114,9 +112,9 @@ public class FCFSAlgorithm {
 		Process newProcess = arrival.poll();
 		this.rq.add(newProcess);
 		if(newProcess.getState()!="BLOCKED")
-			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) arrived;added to ready queue "+printQueueContents(rq));
+			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
 		else
-			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getCPUBurstTime()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
+			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 		newProcess.enterQueue(newProcess.getArrivalTime());
 	}
 	
@@ -158,6 +156,8 @@ public class FCFSAlgorithm {
 			for(double w:p.waitTime)
 				total+=w;
 		}
+		if(entries==0)
+			return 0;
 		return total/entries;
 	}
 	
@@ -169,6 +169,8 @@ public class FCFSAlgorithm {
 			for(double w:p.getTurnaroundTime())
 				total+=w;
 		}
+		if(entries==0)
+			return 0;
 		return total/entries;
 	}
 	
