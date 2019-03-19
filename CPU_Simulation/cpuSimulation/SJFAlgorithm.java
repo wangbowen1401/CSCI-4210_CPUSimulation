@@ -121,7 +121,7 @@ public class SJFAlgorithm {
 				if(currentProcess.getState()!="COMPLETE") {
 					System.out.print("time "+ (int)(count-(cw/2)) + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
 					printQueueContents(Q);
-					System.out.print("time " + (int)(count - (cw/2)) + "ms: Recalculated tau = " + currentProcess.getTimeGuess() + " for Process " + currentProcess.getProcessID() + " ");
+					System.out.print("time " + (int)(count - (cw/2)) + "ms: Recalculated tau = " + currentProcess.getTimeGuess() + "ms for Process " + currentProcess.getProcessID() + " ");
 					printQueueContents(Q);
 					System.out.print("time "+ (int)(count-(cw/2)) + "ms: Process " + currentProcess.getProcessID() + " switching out of CPU; will block on I/O until time "+ currentProcess.getArrivalTime() + " ");
 					printQueueContents(Q);
@@ -136,7 +136,7 @@ public class SJFAlgorithm {
 				}
 				else {
 					completedProcesses.add(currentProcess);
-					System.out.print("time " + count + "ms: Process " + currentProcess.getProcessID() + "terminated ");
+					System.out.print("time " + count + "ms: Process " + currentProcess.getProcessID() + " terminated ");
 					printQueueContents(Q);
 
 				}
@@ -173,7 +173,7 @@ public class SJFAlgorithm {
 				
 			}
 		}
-		System.out.println("time "+count+"ms: Simulator ended for <SJF> [Q empty]");
+		System.out.println("time "+count+"ms: Simulator ended for SJF [Q empty]");
 	}
 	
 	
