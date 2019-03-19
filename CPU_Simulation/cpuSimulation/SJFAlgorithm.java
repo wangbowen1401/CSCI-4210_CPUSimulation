@@ -92,15 +92,15 @@ public class SJFAlgorithm {
 			if(currentProcess.getState()!="RUNNING") {
 				Q.poll();
 				currentProcess.enterCPU(count);
+				count+=cw/2;
 
 				if(count <= 999) {
 					System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst ");
 					printQueueContents(Q);
 				}
 
-				count+=cw/2;
-				System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst ");
-				printQueueContents(Q);
+//				System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst ");
+//				printQueueContents(Q);
 
 			}
 			
@@ -132,12 +132,12 @@ public class SJFAlgorithm {
 				
 				currentProcess.complete(count);
 				if(currentProcess.getState()!="COMPLETE") {
-					System.out.print("time "+ count + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
-					printQueueContents(Q);
-					System.out.print("time " + count + "ms: Recalculated tau = " + currentProcess.getTimeGuess() + "ms for Process " + currentProcess.getProcessID() + " ");
-					printQueueContents(Q);
-					System.out.print("time "+ count+ "ms: Process " + currentProcess.getProcessID() + " switching out of CPU; will block on I/O until time "+ currentProcess.getArrivalTime() + " ");
-					printQueueContents(Q);
+//					System.out.print("time "+ count + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
+//					printQueueContents(Q);
+//					System.out.print("time " + count + "ms: Recalculated tau = " + currentProcess.getTimeGuess() + "ms for Process " + currentProcess.getProcessID() + " ");
+//					printQueueContents(Q);
+//					System.out.print("time "+ count+ "ms: Process " + currentProcess.getProcessID() + " switching out of CPU; will block on I/O until time "+ currentProcess.getArrivalTime() + " ");
+				//	printQueueContents(Q);
 					if(count <= 999) {
 						System.out.print("time "+ count + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
 						printQueueContents(Q);
@@ -157,6 +157,7 @@ public class SJFAlgorithm {
 				}
 				else {
 					completedProcesses.add(currentProcess);
+					
 					System.out.print("time " + count + "ms: Process " + currentProcess.getProcessID() + " terminated ");
 					printQueueContents(Q);
 
