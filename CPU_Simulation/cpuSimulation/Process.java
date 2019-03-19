@@ -214,9 +214,6 @@ public  class Process{
 	public void complete(int time) {
 		numCPUBurst--;
 		turnaroundTime[numCPUBurst]+=waitTime[numCPUBurst]+cw/2;
-//		for(int i:turnaroundTime)
-//			System.out.print(i+" ");
-//		System.out.println();
 		if(numCPUBurst>0) {
 			burstTimeGuess = (int)((1-alpha)*burstTimeGuessRecord+alpha*cpuBurstTime.getFirst());
 			cpuBurstTime.poll();

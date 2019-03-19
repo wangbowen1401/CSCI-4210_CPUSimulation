@@ -16,7 +16,7 @@ public class Project1{
 		
 		double lambda =0.001;
 		double upper = 3000;
-		int n = 26;
+		int n = 20;
 		long seed = 50;
 		int cw = 8;
 		double alpha = 0.5;
@@ -25,13 +25,13 @@ public class Project1{
 		RandomSequence seq3 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		RandomSequence seq4 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		
-		//SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
-		//SRT.simulate();
-		//System.out.println(SRT);
+		SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
+		SRT.simulate();
+		System.out.println(SRT);
 		
-		FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
-		FCFS.simulate();
-		System.out.println(FCFS);
+		//FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
+		//FCFS.simulate();
+		//System.out.println(FCFS);
 		
 		//SJFAlgorithm SJF = new SJFAlgorithm(seq3,cw);
 		//SJF.simulate();
