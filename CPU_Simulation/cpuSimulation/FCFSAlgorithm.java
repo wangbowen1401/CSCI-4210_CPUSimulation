@@ -11,6 +11,7 @@ public class FCFSAlgorithm {
 	private ArrayList<Process> done;
 	private final double avgCPUBurst;
 	private int cw;
+	private boolean full = false;
 	
 	public FCFSAlgorithm(RandomSequence test,int cw) {
 		arrival = test.getSequence();
@@ -37,9 +38,9 @@ public class FCFSAlgorithm {
 			while(arrival.size()>0&&count==arrival.peek().getArrivalTime()) { 
 				Process newProcess = arrival.poll();
 				rq.add(newProcess);
-				if(newProcess.getState()!="BLOCKED"&&count<=1)
+				if(newProcess.getState()!="BLOCKED"&&(count<=999 || full == true))
 					System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-				else if(count<=1)
+				else if((count<=999 || full == true))
 					System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 				newProcess.enterQueue(newProcess.getArrivalTime());
 			}
@@ -50,7 +51,7 @@ public class FCFSAlgorithm {
 				count+=cw/2;
 				while(arrival.size()>0&&count>=arrival.peek().getArrivalTime())
 					addNewProcess();
-				if(count<=1)
+				if((count<=999 || full == true))
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.getRemainingTime()+"ms burst "+printQueueContents(rq));
 			}
 			
@@ -64,13 +65,13 @@ public class FCFSAlgorithm {
 				p.complete(count);
 				// Still more cpu bursts left
 				if(p.getState()!="COMPLETE") {
-					if(count<=1) {
+					if((count<=999 || full == true)) {
 						System.out.println("time "+count+"ms: Process "+p.getProcessID()+ " completed a CPU Burst; "+p.getNumBurst()+" bursts to go "+printQueueContents(rq));
 						System.out.println("time "+count+"ms: Recalculated tau = "+p.getTimeGuess()+"ms for process "+p.getProcessID()+" "+printQueueContents(rq));
 					}
 					p.resetEnterTime();
 					arrival.add(p);
-					if(count<=1)
+					if((count<=999 || full == true))
 						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" switching out of CPU; will block on I/O until time "+p.getArrivalTime()+"ms "+printQueueContents(rq));
 				}
 				// Completed all the cpu and io bursts, added to arrayList for analysis
@@ -87,17 +88,17 @@ public class FCFSAlgorithm {
 					p=arrival.poll();
 					count = p.getArrivalTime();
 					rq.add(p);
-					if(p.getState()!="BLOCKED"&&count<=1)
+					if(p.getState()!="BLOCKED"&&(count<=999 || full == true))
 						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-					else if(count<=1)
+					else if((count<=999 || full == true))
 						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 					p.enterQueue(count);
 					while(arrival.size()!=0&&arrival.peek().getArrivalTime()==p.getArrivalTime()) {
 						Process newProcess=arrival.poll();
 						rq.add(newProcess);
-						if(newProcess.getState()!="BLOCKED"&&count<=1)
+						if(newProcess.getState()!="BLOCKED"&&(count<=999 || full == true))
 							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-						else if(count<=1)
+						else if((count<=999 || full == true))
 							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 					}
 					p=rq.poll();
