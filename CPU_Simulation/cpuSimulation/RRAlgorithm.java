@@ -1,4 +1,4 @@
- package cpuSimulation;
+package cpuSimulation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -160,7 +160,7 @@ public class RRAlgorithm{
 
 			}
 		}
-		System.out.println("time "+count+"ms: Simulator ended for <RR> [Q empty]");
+		System.out.println("time "+count+"ms: Simulator ended for RR [Q empty]");
 	}
 	
 	private void addNewProcess() 

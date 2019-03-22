@@ -60,7 +60,7 @@ public class Project1{
 		
 		
 		RRAlgorithm RR = new RRAlgorithm(seq4,cw, ts, rrAdd);
-		//RR.simulate();
+		RR.simulate();
 		//System.out.println(SJF);
 		
 		writer.println(SJF);

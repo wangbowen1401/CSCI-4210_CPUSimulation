@@ -18,7 +18,7 @@ Algorithm FCFS
 -- total number of preemptions: 0
 Algorithm RR
 -- average CPU burst time: 1392.683
--- average wait time: 0.000
--- average turnaround time: NaN
--- total number of context switches: 0
--- total number of preemptions: 0
+-- average wait time: 597.939
+-- average turnaround time: 2038.133
+-- total number of context switches: 1069
+-- total number of preemptions: 889
