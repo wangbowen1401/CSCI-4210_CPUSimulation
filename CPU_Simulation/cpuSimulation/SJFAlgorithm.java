@@ -12,7 +12,10 @@ import java.util.PriorityQueue;
 class SJFComparator implements Comparator<Process>{
 	@Override
 	public int compare(Process p1, Process p2) {
-        return (int)Math.ceil(p1.getTimeGuess()-p2.getTimeGuess());
+		if(p1.getTimeGuess()!=p2.getTimeGuess())
+			return (int)Math.ceil(p1.getTimeGuess()-p2.getTimeGuess());
+		else
+			return p1.getProcessID()<p2.getProcessID()?-1:1;
     }
 }
 
@@ -143,9 +146,9 @@ public class SJFAlgorithm {
 					if(count <= 999) {
 						System.out.print("time "+ count + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
 						printQueueContents(Q);
-						System.out.print("time " + count + "ms: Recalculated tau = " + currentProcess.getTimeGuess() + " for Process " + currentProcess.getProcessID() + " ");
+						System.out.print("time " + count + "ms: Recalculated tau = " + currentProcess.getTimeGuess() + "ms for Process " + currentProcess.getProcessID() + " ");
 						printQueueContents(Q);
-						System.out.print("time "+ count + "ms: Process " + currentProcess.getProcessID() + " switching out of CPU; will block on I/O until time "+ currentProcess.getArrivalTime() + " ");
+						System.out.print("time "+ count + "ms: Process " + currentProcess.getProcessID() + " switching out of CPU; will block on I/O until time "+ currentProcess.getArrivalTime() + "ms ");
 						printQueueContents(Q);						
 					}
 
