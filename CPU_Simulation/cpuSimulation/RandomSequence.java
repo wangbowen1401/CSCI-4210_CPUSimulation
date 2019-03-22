@@ -16,6 +16,7 @@ class RandomSequence{
 	private long seed;
  	private final double lambda;
 	private final double upper;
+	private boolean print = false;
 	
 	RandomSequence(long seed,int cw,double lambda,double alpha,double upper,int n){
 		sequence = new PriorityQueue<Process>(new ArrivalComparator());
@@ -25,15 +26,18 @@ class RandomSequence{
 		this.upper = upper;
 		char id = 'A';
 		for(int i=0;i<n;i++) {
-			int arrivalTime = (int)Math.floor(-1*Math.log(this.random())/lambda);
-			int numCPUBurst = (int)(this.random()*100)+1;
+			int arrivalTime = (int)Math.floor(-1*Math.log(this.random(true))/lambda);
+			if(arrivalTime == 56) 
+				print=true;
+			int numCPUBurst = (int)(this.random(false)*100)+1;
+			print = false;
 			LinkedList<Integer> cpuBurstTime = new LinkedList<Integer>();
 			LinkedList<Integer> ioBurstTime = new LinkedList<Integer>();
 			for(int j=0;j<numCPUBurst;j++) {
-				int a=(int)Math.ceil(-1*Math.log(this.random())/lambda);
+				int a=(int)Math.ceil(-1*Math.log(this.random(true))/lambda);
 				cpuBurstTime.add(a);
 				if(j<numCPUBurst-1) {
-					int b = (int)Math.ceil(-1*Math.log(this.random())/lambda);
+					int b = (int)Math.ceil(-1*Math.log(this.random(true))/lambda);
 					ioBurstTime.add(b);
 				}
 			}
@@ -62,19 +66,20 @@ class RandomSequence{
 		return new PriorityQueue<Process>(sequence);
 	}
 	
-	public double random(){
+	public double random(boolean exponential){
 		long mod = (long) Math.pow(2,48);
 		this.seed = (long)((this.seed*25214903917L)+11)%(mod);
-		double rand = (this.seed+0.0)/(mod);
+		double rand = (this.seed+0.00)/(mod);
 		if(rand<=0)
 			rand=1+rand;
 		double randomValue = Math.ceil(-1*Math.log(rand)/lambda);
 		if(randomValue<=upper) {
 			return rand;
 		}
-		else {
-			return random();
+		else if(exponential){
+			return this.random(exponential);
 		}
+		return rand;
 	}
 	
 	@Override
