@@ -11,15 +11,28 @@ public class Project1{
 	
 
 	public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
+		
+		
 		//System.setOut(new PrintStream(new BufferedOutputStream(new FileOutputStream("out.txt"))));
 		PrintWriter writer  = new PrintWriter("simout.txt","UTF-8");
 		
-		double lambda =0.001;
-		double upper = 3000;
-		int n = 2;
-		long seed = 50;
-		int cw = 8;
-		double alpha = 0.5;
+		double lambda =Double.parseDouble(args[1]);
+		double upper = Double.parseDouble(args[2]);
+		
+		int n = Integer.parseInt(args[3]);
+		long seed = Long.parseLong(args[0]);
+		int cw = Integer.parseInt(args[4]);
+		double alpha = Double.parseDouble(args[5]);
+		String rrAdd;
+		
+		int ts = Integer.parseInt(args[6]);
+		if(args[7] != null) {
+			 rrAdd = args[7];
+		}else {
+			 rrAdd = "END";
+		}
+		
+		
 		
 		RandomSequence seq = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		RandomSequence seq2 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
@@ -46,8 +59,8 @@ public class Project1{
 		
 		
 		
-		RRAlgorithm RR = new RRAlgorithm(seq4,cw, 100, "BEGINNING");
-		RR.simulate();
+		RRAlgorithm RR = new RRAlgorithm(seq4,cw, ts, rrAdd);
+		//RR.simulate();
 		//System.out.println(SJF);
 		
 		writer.println(SJF);

@@ -31,6 +31,7 @@ public class SRTAlgorithm{
 	}
 
 	public void simulate() {
+		full = false;
 		System.out.println("time 0ms: Simulator started for SRT "+printQueueContents(rq));
 		// Making sure n != 0
 		if(arrival.size()==0) {
@@ -75,7 +76,6 @@ public class SRTAlgorithm{
 			int queue = Integer.MAX_VALUE;
 			if(arrival.size()>0) {
 				in =  arrival.peek().getArrivalTime();
-				System.out.println("time "+count+"ms: in = "+in);
 			}
 			else if(rq.size()>0&&cwEntry) {
 				queue = count+rq.peek().getCPUBurstTime();
@@ -148,9 +148,9 @@ public class SRTAlgorithm{
 				// A preemption is needed
 				if(!arrival.isEmpty()&&arrival.peek().getTimeGuess()<remain) {
 					Process newProcess = arrival.poll();
-					if(p.getState()!="BLOCKED"&&newProcess.getArrivalTime()!=-1)
+					if(p.getState()!="BLOCKED"&&newProcess.getArrivalTime()!=-1 && count <= 999)
 						System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) will preempt "+p.getProcessID()+" "+printQueueContents(rq));
-					else if(newProcess.getArrivalTime()!=-1)
+					else if(newProcess.getArrivalTime()!=-1 && count <= 999)
 						System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O and will preempt "+p.getProcessID()+" "+printQueueContents(rq));	
 					while(!arrival.isEmpty()&&newProcess.getArrivalTime()==count)
 						addNewProcess();
@@ -188,9 +188,9 @@ public class SRTAlgorithm{
 	private void addNewProcess() {
 		Process newProcess = arrival.poll();
 		this.rq.add(newProcess);
-		if(newProcess.getState()!="BLOCKED"&&newProcess.getArrivalTime()!=-1)
+		if(newProcess.getState()!="BLOCKED"&&newProcess.getArrivalTime()!=-1 && newProcess.getArrivalTime() <= 999)
 			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) arrived;added to ready queue "+printQueueContents(rq));
-		else if(newProcess.getArrivalTime()!=-1)
+		else if(newProcess.getArrivalTime()!=-1 && newProcess.getArrivalTime() <=999)
 			System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O;added to ready queue "+printQueueContents(rq));
 		newProcess.enterQueue(newProcess.getArrivalTime());
 	}
