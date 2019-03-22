@@ -87,39 +87,6 @@ public  class Process{
 		numPreempt = 0;
 		numContextSwitch=0;
 	}
-	
-	/*
-	public Process(Process original){
-		this.processID=original.getProcessID();
-		this.alpha=original.alpha;
-		
-		this.state=original.state;
-	    this.arrivalTime=original.arrivalTime;
-		this.enterTime=original.enterTime; // When the process enter ready queue or cpu
-		this.burstTimeGuess=original.burstTimeGuess;
-		this.burstTimeGuessRecord=original.burstTimeGuessRecord;
-		this.numCPUBurst=original.numCPUBurst;
-		this.numCPUBurstRecord=original.numCPUBurstRecord;
-		this.remainingTime=original.remainingTime;
-		this.numPreempt=original.numPreempt;
-		this.numContextSwitch=original.numContextSwitch;
-		this.cw=original.cw;
-		
-		this.cpuBurstTime=original.cpuBurstTime;
-		this.waitTime= new int[numCPUBurstRecord];
-		Arrays.fill(waitTime, 0);
-		this.turnaroundTime=new int[numCPUBurstRecord];
-		this.ioBurstTime=original.ioBurstTime;
-		
-		int i=0;
-		for(Integer burst:cpuBurstTime) {
-			turnaroundTime[i]=(int)burst;
-			i++;
-		}
-		
-		
-		
-	}*/
 
 	
 	
@@ -215,7 +182,7 @@ public  class Process{
 		numCPUBurst--;
 		turnaroundTime[numCPUBurst]+=waitTime[numCPUBurst]+cw/2;
 		if(numCPUBurst>0) {
-			burstTimeGuess = (int)((1-alpha)*burstTimeGuessRecord+alpha*cpuBurstTime.getFirst());
+			burstTimeGuess = (int)Math.ceil((1-alpha)*burstTimeGuessRecord+alpha*cpuBurstTime.getFirst());
 			cpuBurstTime.poll();
 			state="BLOCKED";
 			remainingTime = cpuBurstTime.getFirst();

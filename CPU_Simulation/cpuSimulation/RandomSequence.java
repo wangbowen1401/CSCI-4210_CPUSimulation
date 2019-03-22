@@ -66,9 +66,9 @@ class RandomSequence{
 		long mod = (long) Math.pow(2,48);
 		this.seed = (long)((this.seed*25214903917L)+11)%(mod);
 		double rand = (this.seed+0.0)/(mod);
-		if(rand<0)
+		if(rand<=0)
 			rand=1+rand;
-		double randomValue = -1*Math.log(rand)/this.lambda;
+		double randomValue = Math.ceil(-1*Math.log(rand)/lambda);
 		if(randomValue<=upper) {
 			return rand;
 		}

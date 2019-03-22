@@ -31,6 +31,7 @@ public class SRTAlgorithm{
 	}
 
 	public void simulate() {
+		boolean cwEntry = false;
 		full = false;
 		System.out.println("time 0ms: Simulator started for SRT "+printQueueContents(rq));
 		// Making sure n != 0
@@ -38,7 +39,6 @@ public class SRTAlgorithm{
 			System.out.println("time 0ms: Simulator ended for SRT "+printQueueContents(rq));
 			return;
 		}
-		boolean cwEntry = false;
 		Process p = arrival.poll();
 		int count = p.getArrivalTime();
 		rq.add(p);
@@ -63,7 +63,7 @@ public class SRTAlgorithm{
 				count+=cw/2;
 				// Make sure all the process that arrive during contextswitch gets added
 				while(arrival.size()>0&&count>arrival.peek().getArrivalTime()) {
-					cwEntry=true;
+					cwEntry = true;
 					addNewProcess();
 				}
 				if((count<= 999 || full == true))
@@ -77,15 +77,12 @@ public class SRTAlgorithm{
 			if(arrival.size()>0) {
 				in =  arrival.peek().getArrivalTime();
 			}
-			else if(rq.size()>0&&cwEntry) {
-				queue = count+rq.peek().getCPUBurstTime();
-				cwEntry=false;
+			else if(!rq.isEmpty()&&cwEntry) {
+				queue = count+rq.peek().getTimeGuess();
 			}
 			
 			if(Math.min(running, in)<queue)
 				count = Math.min(running, in);
-			else
-				count=queue;
 			
 			// The current process will finish before the new process, just 
 			// finish and deal with context switch
@@ -114,13 +111,6 @@ public class SRTAlgorithm{
 				}
 				if(rq.size()!=0) {
 					p = rq.poll();
-					/*while(arrival.size()>0&&count>=arrival.peek().getArrivalTime()) {
-						cwEntry=true;
-						addNewProcess();
-					}
-					p.enterCPU(count);
-					if(count!=-1)
-						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(rq));*/
 				}
 				// If the next process is from the arrival queue
 				else if(arrival.size()!=0) {
@@ -144,40 +134,47 @@ public class SRTAlgorithm{
 			}
 			else if(count==in){ 
 				// new process arrives before the current process finish
-				double remain = p.getRemainingTime()-(count-p.getEnterTime()); 
+				double remain = p.getTimeGuess()-(count-p.getEnterTime()); 
 				// A preemption is needed
 				if(!arrival.isEmpty()&&arrival.peek().getTimeGuess()<remain) {
 					Process newProcess = arrival.poll();
-					if(p.getState()!="BLOCKED"&&newProcess.getArrivalTime()!=-1 && count <= 999)
+					if(newProcess.getState()!="BLOCKED"&&(newProcess.getArrivalTime()<= 999||full == true))
 						System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) will preempt "+p.getProcessID()+" "+printQueueContents(rq));
-					else if(newProcess.getArrivalTime()!=-1 && count <= 999)
+					else if(newProcess.getArrivalTime()<= 999)
 						System.out.println("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) completed I/O and will preempt "+p.getProcessID()+" "+printQueueContents(rq));	
-					while(!arrival.isEmpty()&&newProcess.getArrivalTime()==count)
-						addNewProcess();
+
 					p.enterQueue(count);
 					rq.add(p);
 					p = newProcess;
 					count+=cw/2;
+					while(!arrival.isEmpty()&&newProcess.getArrivalTime()<=count) {
+						addNewProcess();
+						cwEntry = true;
+					}
+						
 				}
-				// The new SRTProcess will not cause preemption, so just add it to the queue
+				// The new process will not cause preemption, so just add it to the queue
 				else { 
 					while(!arrival.isEmpty()&&arrival.peek().getArrivalTime()==count)
 						addNewProcess();
 				}
 			}
 			// If a process that arrived during contextswitch completes burst before remainder of the process of a new process arrival
-			else {
+			else{
+				cwEntry = false;
 				Process newProcess = rq.peek();
-				if((count<= 999 || full == true))
+				if(count<= 999 || full == true) {
 					System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" (tau "+newProcess.getTimeGuess()+"ms) will preempt "+p.getProcessID()+" "+printQueueContents(rq));
+				}
 				rq.poll();
 				
 				// Deal with the contextswitch in the if condition, or else it will count the entire cw
-				count+=cw/2;
 				p.enterQueue(count);
+				count+=cw/2;
 				rq.add(p);
 				p=newProcess;
 				p.enterCPU(count);
+				count+=cw/2;
 				if((count<= 999 || full == true))
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.remainingTime+"ms burst "+printQueueContents(rq));
 			}
