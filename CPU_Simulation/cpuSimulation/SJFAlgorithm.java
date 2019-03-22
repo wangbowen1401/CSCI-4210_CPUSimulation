@@ -175,6 +175,8 @@ public class SJFAlgorithm {
 					currentProcess=arrivalQueue.peek();
 					count = currentProcess.getArrivalTime();
 					Q.add(arrivalQueue.poll());
+					
+					
 					if(currentProcess.getState() == "BLOCKED") {
 						if(count <= 999) {
 							System.out.print("time " + count + "ms:" + " Process " + currentProcess.getProcessID() + " (tau " + currentProcess.getTimeGuess() + "ms) completed I/O; added to ready queue " );
