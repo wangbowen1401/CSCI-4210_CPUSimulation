@@ -26,7 +26,7 @@ public class Project1{
 		String rrAdd;
 		
 		int ts = Integer.parseInt(args[6]);
-		if(args[7] != null) {
+		if(args.length == 8) {
 			 rrAdd = args[7];
 		}else {
 			 rrAdd = "END";
