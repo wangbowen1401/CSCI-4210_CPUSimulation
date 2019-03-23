@@ -16,7 +16,6 @@ class RandomSequence{
 	private long seed;
  	private final double lambda;
 	private final double upper;
-	private boolean print = false;
 	
 	RandomSequence(long seed,int cw,double lambda,double alpha,double upper,int n){
 		sequence = new PriorityQueue<Process>(new ArrivalComparator());
@@ -27,10 +26,7 @@ class RandomSequence{
 		char id = 'A';
 		for(int i=0;i<n;i++) {
 			int arrivalTime = (int)Math.floor(-1*Math.log(this.random(true))/lambda);
-			if(arrivalTime == 56) 
-				print=true;
 			int numCPUBurst = (int)(this.random(false)*100)+1;
-			print = false;
 			LinkedList<Integer> cpuBurstTime = new LinkedList<Integer>();
 			LinkedList<Integer> ioBurstTime = new LinkedList<Integer>();
 			for(int j=0;j<numCPUBurst;j++) {
