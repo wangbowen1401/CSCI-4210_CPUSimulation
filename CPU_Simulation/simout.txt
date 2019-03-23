@@ -1,0 +1,24 @@
+Algorithm SJF
+-- average CPU burst time: 849.288
+-- average wait time: 24569.124
+-- average turnaround time: 29602.562
+-- total number of context switches: 525
+-- total number of preemptions: 0
+Algorithm SRT
+-- average CPU burst time: 849.288
+-- average wait time: 4106.886
+-- average turnaround time: 4961.370
+-- total number of context switches: 682
+-- total number of preemptions: 157
+Algorithm FCFS
+-- average CPU burst time: 849.288
+-- average wait time: 4513.408
+-- average turnaround time: 5366.695
+-- total number of context switches: 525
+-- total number of preemptions: 0
+Algorithm RR
+-- average CPU burst time: 849.288
+-- average wait time: 4501.141
+-- average turnaround time: 5356.379
+-- total number of context switches: 781
+-- total number of preemptions: 256
