@@ -37,16 +37,16 @@ public class Project1{
 		RandomSequence seq3 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		RandomSequence seq4 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		
-		SJFAlgorithm SJF = new SJFAlgorithm(seq3,cw);
+		/*SJFAlgorithm SJF = new SJFAlgorithm(seq3,cw);
 		SJF.simulate();
-		System.out.println();
+		System.out.println();*/
 
 		
 		SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
 		SRT.simulate();
 		System.out.println();
 		
-
+/*
 		FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
 		FCFS.simulate();
 		System.out.println();
@@ -58,7 +58,7 @@ public class Project1{
 		writer.println(SJF);
 		writer.println(SRT);
 		writer.println(FCFS);
-		writer.println(RR);
+		writer.println(RR);*/
 		writer.close();
 
 		

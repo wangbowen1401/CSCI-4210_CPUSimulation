@@ -55,7 +55,7 @@ class RandomSequence{
 		}
 		while(!print.isEmpty()) {
 			Process p = print.poll();
-			System.out.println("Process " + p.getProcessID() + "[NEW] (arrival time " + p.getArrivalTime() + " ms) " + p.getNumBurst() + " CPU bursts");
+			System.out.println("Process " + p.getProcessID() + " [NEW] (arrival time " + p.getArrivalTime() + " ms) " + p.getNumBurst() + " CPU bursts");
 		}
 		
 	}
