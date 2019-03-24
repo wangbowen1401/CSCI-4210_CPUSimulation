@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 Algorithm SRT
 -- average CPU burst time: 849.288
 -- average wait time: 4107.019
 -- average turnaround time: 4961.518
 -- total number of context switches: 684
 -- total number of preemptions: 159
+=======
+Algorithm SJF
+-- average CPU burst time: 849.288
+-- average wait time: 24569.124
+-- average turnaround time: 29602.562
+-- total number of context switches: 525
+-- total number of preemptions: 0
+>>>>>>> cbf2b0a1be2cacc60c751dc5ecc14106ff6fe365

@@ -47,9 +47,15 @@ public class Project1{
 		System.out.println();
 		
 
+<<<<<<< HEAD
 //		FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
 //		FCFS.simulate();
 //		System.out.println();
+=======
+		/*FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
+		FCFS.simulate();
+		System.out.println();
+>>>>>>> cbf2b0a1be2cacc60c751dc5ecc14106ff6fe365
 		
 //		RRAlgorithm RR = new RRAlgorithm(seq4,cw, ts, rrAdd);
 //		RR.simulate();
@@ -57,8 +63,14 @@ public class Project1{
 		
 //		writer.println(SJF);
 		writer.println(SRT);
+<<<<<<< HEAD
 //		writer.println(FCFS);
 //		writer.println(RR);
+=======
+		writer.println(FCFS);
+		writer.println(RR);*/
+		writer.println(SJF);
+>>>>>>> cbf2b0a1be2cacc60c751dc5ecc14106ff6fe365
 		writer.close();
 
 		
