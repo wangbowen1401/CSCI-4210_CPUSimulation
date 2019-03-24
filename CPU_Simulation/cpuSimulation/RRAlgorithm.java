@@ -61,10 +61,11 @@ public class RRAlgorithm{
 		}
 		Process p = arrival.poll();
 		int count = p.getArrivalTime();
+		int past = 0;
 		this.rq.add(p);
+		int context = 0;
 		System.out.print("time "+count+"ms: Process "+p.getProcessID()+" arrived; added to ready queue "+printQueueContents(this.rq));
 		p = this.rq.poll();
-		int past = 0;
 		while(!arrival.isEmpty()||!this.rq.isEmpty()||p.getNumBurst()!=0)
 		{
 			// Add all the process with the same arrival time
@@ -105,6 +106,7 @@ public class RRAlgorithm{
 						System.out.print("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU with "+p.getRemainingTime()+"ms remaining "+printQueueContents(this.rq));	
 					}
 				}
+				context = 0;
 				
 			}
 			
@@ -113,20 +115,24 @@ public class RRAlgorithm{
 			int expire = this.t_slice+count-past;
 			int peek = Integer.MAX_VALUE;
 			
-			if(arrival.size()>0)
+			if((arrival.size()>0))
 			{
 				peek = arrival.peek().getArrivalTime();
-			}
-			
-			if(peek<=expire && expire < running) 
-			{
-				past = peek-count+past;
+				if(context==1)
+				{
+					System.out.println("stuff");
+					peek+=(cw/2);
+				}
+				if(peek<=expire && expire < running) 
+				{
+					past = peek-count+past;
+				}
+				
 			}
 
 			
 			int maybe = Math.min(running, expire);
-			
-
+ 
 			count = Math.min(maybe, peek);
 
 			// The current process will finish before or when the time slice expires 
@@ -148,7 +154,7 @@ public class RRAlgorithm{
 					
 						System.out.print("time "+count+"ms: Process "+p.getProcessID()+" switching out of CPU; will block on I/O until time "+p.getArrivalTime()+"ms "+printQueueContents(this.rq));
 					}
-					
+//					System.out.println(count+","+cw/2);
 					
 					arrival.add(p);
 					
@@ -161,6 +167,9 @@ public class RRAlgorithm{
 				}
 				// Move onto the next Process in the ready queue because new Process didn't arrive yet.
 				count+=cw/2; // Add context switch to move the Process out
+				context = 1;
+//				System.out.println(count+","+cw/2);
+
 				if(rq.size()!=0) 
 				{
 					p = rq.poll();
@@ -192,6 +201,7 @@ public class RRAlgorithm{
 			}
 			else if(count == peek && peek != expire)
 			{
+ 
 				while(arrival.size()!=0&&arrival.peek().getArrivalTime()==count) 
 				{	addNewProcess();}
 			}
@@ -222,13 +232,13 @@ public class RRAlgorithm{
 					}
 
 					count+=cw/2;
+					context = 1;
 //					System.out.print("time "+count+"ms: Process "+p.getProcessID()+" arrived;added to ready queue "+printQueueContents(this.rq));
  					add_to_ready_queue(this.rq, p, "END");//Is end because it didn't just arrive.
 					while(arrival.size()!=0&&arrival.peek().getArrivalTime()==p.getArrivalTime()) 
 					{
 						addNewProcess();
 					}
-					
 					p=rq.poll();
  				}
 //				printQueueContents(rq);
