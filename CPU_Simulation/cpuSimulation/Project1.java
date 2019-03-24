@@ -42,12 +42,12 @@ public class Project1{
 		System.out.println();
 
 		
-		//SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
-		//SRT.simulate();
-		//System.out.println();
+		SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
+		SRT.simulate();
+		System.out.println();
 		
 
-		/*FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
+		FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
 		FCFS.simulate();
 		System.out.println();
 		
@@ -58,8 +58,7 @@ public class Project1{
 		writer.println(SJF);
 		writer.println(SRT);
 		writer.println(FCFS);
-		writer.println(RR);*/
-		writer.println(SJF);
+		writer.println(RR);
 		writer.close();
 
 		
