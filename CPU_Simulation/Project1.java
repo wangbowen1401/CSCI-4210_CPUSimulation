@@ -50,10 +50,10 @@ public class Project1{
 		FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
 		FCFS.simulate();
 		System.out.println();
-		
+//		
 		RRAlgorithm RR = new RRAlgorithm(seq4,cw, ts, rrAdd);
 		RR.simulate();
-		//System.out.println();
+
 		
 		writer.println(SJF);
 		writer.println(SRT);

@@ -11,7 +11,7 @@ public class FCFSAlgorithm {
 	private ArrayList<Process> done;
 	private final double avgCPUBurst;
 	private int cw;
-	private boolean full = true;
+	private boolean full = false;
 	
 	public FCFSAlgorithm(RandomSequence test,int cw) {
 		arrival = test.getSequence();

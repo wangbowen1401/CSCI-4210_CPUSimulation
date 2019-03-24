@@ -88,13 +88,13 @@ public class SJFAlgorithm {
 				Q.add(newProcess);
 				
 				if(newProcess.getState() == "BLOCKED") {
-					if(newProcess.getArrivalTime() <= 9999999) {
+					if(newProcess.getArrivalTime() <= 999) {
 						System.out.print("time " + newProcess.getArrivalTime() + "ms:" + " Process " + newProcess.getProcessID() + " (tau " + newProcess.getTimeGuess() + "ms) completed I/O; added to ready queue " );
 						printQueueContents(Q);
 					}
 					
 				}else {
-					if(r.getArrivalTime() <= 9999999) {
+					if(r.getArrivalTime() <= 999) {
 						System.out.print("time " + newProcess.getArrivalTime() + "ms: Process " + newProcess.getProcessID() + " (tau " + newProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
 						printQueueContents(Q);
 					}
@@ -113,13 +113,13 @@ public class SJFAlgorithm {
 					Q.add(r);
 					
 					if(r.getState() == "BLOCKED") {
-						if(r.getArrivalTime() <= 9999999) {
+						if(r.getArrivalTime() <= 999) {
 							System.out.print("time " + r.getArrivalTime() + "ms:" + " Process " + r.getProcessID() + " (tau " + r.getTimeGuess() + "ms) completed I/O; added to ready queue " );
 							printQueueContents(Q);
 						}
 						
 					}else {
-						if(r.getArrivalTime() <= 9999999) {
+						if(r.getArrivalTime() <= 999) {
 							System.out.print("time " + r.getArrivalTime() + "ms: Process " + r.getProcessID() + " (tau " + r.getTimeGuess() + "ms) arrived; added to ready queue ");
 							printQueueContents(Q);
 						}
@@ -131,7 +131,7 @@ public class SJFAlgorithm {
 					
 				}
 
-				if(count <= 9999999) {
+				if(count <= 999) {
 					System.out.print("time " + count +"ms: Process " + currentProcess.getProcessID()+ " started using the CPU for " + currentProcess.getCPUBurstTime() + "ms burst ");
 					printQueueContents(Q);
 				}
@@ -153,12 +153,12 @@ public class SJFAlgorithm {
 //					Process p = arrivalQueue.peek();
 //					Q.add(arrivalQueue.poll());
 //					if(p.getState() == "BLOCKED") {
-//						if(count <= 9999999) {
+//						if(count <= 999) {
 //							System.out.print("time " + count + "ms:" + " Process " + p.getProcessID() + " (tau " + p.getTimeGuess() + "ms) completed I/O; added to ready queue " );
 //							printQueueContents(Q);
 //						}
 //					}else {
-//						if(count <= 9999999) {
+//						if(count <= 999) {
 //							System.out.print("time " + count + "ms: Process " + p.getProcessID() + " (tau " + p.getTimeGuess() + "ms) arrived; added to ready queue ");
 //							printQueueContents(Q);
 //						}
@@ -175,7 +175,7 @@ public class SJFAlgorithm {
 //					printQueueContents(Q);
 //					System.out.print("time "+ count+ "ms: Process " + currentProcess.getProcessID() + " switching out of CPU; will block on I/O until time "+ currentProcess.getArrivalTime() + " ");
 				//	printQueueContents(Q);
-					if(count <= 9999999) {
+					if(count <= 999) {
 						if(currentProcess.getNumBurst() > 1)
 							System.out.print("time "+ count + "ms: Process " + currentProcess.getProcessID() + " completed a CPU burst; " + currentProcess.getNumBurst() + " bursts to go " );
 						else
@@ -210,13 +210,13 @@ public class SJFAlgorithm {
 					Q.add(r);
 					
 					if(r.getState() == "BLOCKED") {
-						if(r.getArrivalTime() <= 9999999) {
+						if(r.getArrivalTime() <= 999) {
 							System.out.print("time " + r.getArrivalTime() + "ms:" + " Process " + r.getProcessID() + " (tau " + r.getTimeGuess() + "ms) completed I/O; added to ready queue " );
 							printQueueContents(Q);
 						}
 						
 					}else {
-						if(r.getArrivalTime() <= 9999999) {
+						if(r.getArrivalTime() <= 999) {
 							System.out.print("time " + r.getArrivalTime() + "ms: Process " + r.getProcessID() + " (tau " + r.getTimeGuess() + "ms) arrived; added to ready queue ");
 							printQueueContents(Q);
 						}
@@ -238,13 +238,13 @@ public class SJFAlgorithm {
 					
 					
 					if(currentProcess.getState() == "BLOCKED") {
-						if(count <= 9999999) {
+						if(count <= 999) {
 							System.out.print("time " + currentProcess.getArrivalTime() + "ms:" + " Process " + currentProcess.getProcessID() + " (tau " + currentProcess.getTimeGuess() + "ms) completed I/O; added to ready queue " );
 							printQueueContents(Q);
 						}
 						
 					}else {
-						if(count <= 9999999) {
+						if(count <= 999) {
 							System.out.print("time " + currentProcess.getArrivalTime() + "ms: Process " + currentProcess.getProcessID() + " (tau " + currentProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
 							printQueueContents(Q);
 						}
@@ -263,12 +263,12 @@ public class SJFAlgorithm {
 
 				if(newProcess.getState() == "BLOCKED") {
 					
-					if(count <= 9999999) {
+					if(count <= 999) {
 						System.out.print("time " + count + "ms:" + " Process " + newProcess.getProcessID() + " (tau " + newProcess.getTimeGuess() + "ms) completed I/O; added to ready queue " );
 						printQueueContents(Q);
 					}
 				}else {
-					if(count <= 9999999) {
+					if(count <= 999) {
 						System.out.print("time " + count + "ms: Process " + newProcess.getProcessID() + " (tau " + newProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
 						printQueueContents(Q);
 					}

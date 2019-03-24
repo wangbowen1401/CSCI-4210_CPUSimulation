@@ -69,7 +69,7 @@ public class RRAlgorithm{
         {
             // Add all the process with the same arrival time
             //check if any processes have arrived
-            while(arrival.size()>0&&count>=arrival.peek().getArrivalTime())
+            while(arrival.size()>0&&count==arrival.peek().getArrivalTime())
             {
                 Process newProcess;
                 newProcess = arrival.poll();
@@ -78,11 +78,11 @@ public class RRAlgorithm{
                  
                  if(newProcess.getState()!="BLOCKED"&&(count<=999 || this.full == true))
                 {
-                    System.out.print("time "+count+"ms: Process "+p.getProcessID()+" arrived; added to ready queue "+printQueueContents(this.rq));
+                    System.out.print("time "+count+"ms: Process "+newProcess.getProcessID()+" arrived; added to ready queue "+printQueueContents(this.rq));
                 }
                 else if((count<=999 || this.full == true))
                 {
-                    System.out.print("time "+count+"ms: Process "+p.getProcessID()+" completed I/O; added to ready queue "+printQueueContents(this.rq));
+                    System.out.print("time "+count+"ms: Process "+newProcess.getProcessID()+" completed I/O; added to ready queue "+printQueueContents(this.rq));
                 }
             }
             
@@ -162,7 +162,10 @@ public class RRAlgorithm{
                 }
                 // Move onto the next Process in the ready queue because new Process didn't arrive yet.
                 count+=cw/2; // Add context switch to move the Process out
-//                System.out.println(count+","+cw/2);
+                while(arrival.size()!=0&&arrival.peek().getArrivalTime()<=count)
+                {
+                    addNewProcess();
+                }
 
                 if(rq.size()!=0)
                 {
@@ -218,17 +221,18 @@ public class RRAlgorithm{
                 }
                 else //move stuff off and on queue
                 {
-                    if(count==peek)
-                    {
-                        while(arrival.size()!=0&&arrival.peek().getArrivalTime()==count)
-                            addNewProcess();    
-                    }
-                    p.enterQueue(count);
+                	p.enterQueue(count);
                     if (count<=999 || this.full == true)
                     {    
                         System.out.print("time "+count+"ms: Time slice expired; process "+ p.getProcessID() +" preempted with "+p.getRemainingTime()+"ms to go "+printQueueContents(this.rq));
                     }
 
+                    if(count==peek)
+                    {
+                        while(arrival.size()!=0&&arrival.peek().getArrivalTime()==count)
+                            addNewProcess();    
+                    }
+                  
                     count+=cw/2;
 //                    System.out.print("time "+count+"ms: Process "+p.getProcessID()+" arrived;added to ready queue "+printQueueContents(this.rq));
                      add_to_ready_queue(this.rq, p, "END");//Is end because it didn't just arrive.
@@ -252,8 +256,6 @@ public class RRAlgorithm{
     private void addNewProcess()
     {
         Process newProcess = arrival.poll();
-//        System.out.println(newProcess.getState());
-//        System.out.println("here3");
         add_to_ready_queue(this.rq, newProcess,this.begin_or_end);//deals with beginning/ end of queue issue
         if(newProcess.getState()!="BLOCKED"&&newProcess.getArrivalTime()!=-1)
         {
