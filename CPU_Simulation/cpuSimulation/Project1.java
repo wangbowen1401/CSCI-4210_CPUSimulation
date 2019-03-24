@@ -42,9 +42,9 @@ public class Project1{
 		System.out.println();
 
 		
-		SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
-		SRT.simulate();
-		System.out.println();
+		//SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
+		//SRT.simulate();
+		//System.out.println();
 		
 
 		FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
