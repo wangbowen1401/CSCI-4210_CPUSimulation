@@ -80,29 +80,35 @@ public class SJFAlgorithm {
 		
 		
 		while((!arrivalQueue.isEmpty()|!Q.isEmpty())||currentProcess.getNumBurst()!=0) {
-//			if(count>1810)
-//				return;
 			//printQueueContents(Q);
 			Process newProcess;
 			while(arrivalQueue.size()>0&&count==arrivalQueue.peek().getArrivalTime()) { 
 				newProcess = arrivalQueue.poll();
 				if(!Q.contains(newProcess))
 				Q.add(newProcess);
-				newProcess.enterQueue(count);
-				if(count <= 9999999) {
-					System.out.print("time " + count + "ms: " + "Process " + newProcess.getProcessID() + " (tau " + newProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
-					printQueueContents(Q);
-
+				
+				if(newProcess.getState() == "BLOCKED") {
+					if(newProcess.getArrivalTime() <= 9999999) {
+						System.out.print("time " + newProcess.getArrivalTime() + "ms:" + " Process " + newProcess.getProcessID() + " (tau " + newProcess.getTimeGuess() + "ms) completed I/O; added to ready queue " );
+						printQueueContents(Q);
+					}
+					
+				}else {
+					if(r.getArrivalTime() <= 9999999) {
+						System.out.print("time " + newProcess.getArrivalTime() + "ms: Process " + newProcess.getProcessID() + " (tau " + newProcess.getTimeGuess() + "ms) arrived; added to ready queue ");
+						printQueueContents(Q);
+					}
+					
 				}
+				
+				newProcess.enterQueue(count);
 			}
 			
 			if(currentProcess.getState()!="RUNNING") {
-				//currentProcess = Q.poll();
-				//System.out.println(currentProcess.getState());
 				currentProcess.enterCPU(count);
 
 				count+=cw/2;
-				if(arrivalQueue.isEmpty() == false && arrivalQueue.peek().getArrivalTime() < count) {
+				if(arrivalQueue.isEmpty() == false && arrivalQueue.peek().getArrivalTime() <= count) {
 					r = arrivalQueue.poll();
 					Q.add(r);
 					
@@ -199,7 +205,7 @@ public class SJFAlgorithm {
 				}
 				count+=cw/2;
 				
-				if(arrivalQueue.isEmpty() == false && arrivalQueue.peek().getArrivalTime() < count) {
+				if(arrivalQueue.isEmpty() == false && arrivalQueue.peek().getArrivalTime() <= count) {
 					r = arrivalQueue.poll();
 					Q.add(r);
 					
@@ -216,9 +222,7 @@ public class SJFAlgorithm {
 						}
 						
 					}
-					
 					r.enterQueue(r.getArrivalTime());
-					
 					
 				}
 				//System.out.println(count);
