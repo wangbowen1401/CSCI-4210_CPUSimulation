@@ -44,8 +44,6 @@ public class SRTAlgorithm{
 		System.out.println("time "+count+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) arrived; added to ready queue "+printQueueContents(rq));
 		p = rq.poll();
 		while((!arrival.isEmpty()||!rq.isEmpty())||p.getNumBurst()!=0){
-			//if(count>26827)
-			//	return;
 			// Add all the SRTProcess with the same arrival time
 			while(arrival.size()>0&&count==arrival.peek().getArrivalTime()) {
 				Process newProcess;
