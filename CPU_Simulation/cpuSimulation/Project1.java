@@ -37,9 +37,9 @@ public class Project1{
 		RandomSequence seq3 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		RandomSequence seq4 = new RandomSequence(seed,cw,lambda,alpha,upper,n);
 		
-//		SJFAlgorithm SJF = new SJFAlgorithm(seq3,cw);
-//		SJF.simulate();
-//		System.out.println();
+		SJFAlgorithm SJF = new SJFAlgorithm(seq3,cw);
+		SJF.simulate();
+		System.out.println();
 
 		
 		SRTAlgorithm SRT = new SRTAlgorithm(seq,cw);
@@ -47,30 +47,18 @@ public class Project1{
 		System.out.println();
 		
 
-<<<<<<< HEAD
-//		FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
-//		FCFS.simulate();
-//		System.out.println();
-=======
-		/*FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
+		FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
 		FCFS.simulate();
 		System.out.println();
->>>>>>> cbf2b0a1be2cacc60c751dc5ecc14106ff6fe365
 		
-//		RRAlgorithm RR = new RRAlgorithm(seq4,cw, ts, rrAdd);
-//		RR.simulate();
+		RRAlgorithm RR = new RRAlgorithm(seq4,cw, ts, rrAdd);
+		RR.simulate();
 		//System.out.println();
 		
-//		writer.println(SJF);
-		writer.println(SRT);
-<<<<<<< HEAD
-//		writer.println(FCFS);
-//		writer.println(RR);
-=======
-		writer.println(FCFS);
-		writer.println(RR);*/
 		writer.println(SJF);
->>>>>>> cbf2b0a1be2cacc60c751dc5ecc14106ff6fe365
+		writer.println(SRT);
+		writer.println(FCFS);
+		writer.println(RR);
 		writer.close();
 
 		
