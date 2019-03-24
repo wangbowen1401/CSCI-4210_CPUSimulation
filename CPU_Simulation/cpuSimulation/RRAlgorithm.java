@@ -1,10 +1,8 @@
 package cpuSimulation;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
-import java.util.Queue;
 
 
 public class RRAlgorithm{
@@ -18,10 +16,10 @@ public class RRAlgorithm{
 	private boolean full = false;
 	private LinkedList<Process> rq ;
 	
-	public RRAlgorithm(RandomSequence arrival, double cw, int t_slice, String front_or_end)
+	public RRAlgorithm(RandomSequence arrival, double cw, int t_sl, String front_or_end)
 	{
 		arrivalRecord=arrival.getSequence();
-		this.t_slice = t_slice;
+		this.t_slice = t_sl;
 		this.begin_or_end = front_or_end;
 		this.arrival = arrival.getSequence();
 		this.ave_cpu_burst = this.getAvgCPUBurst();
@@ -40,11 +38,10 @@ public class RRAlgorithm{
 		{
 			print.add(copy.poll());
 		}
-		//Iterator<Process> it = print.iterator();
 		while(!print.isEmpty())
 		{
 			Process p = print.poll();
-			System.out.println("Process " + p.getProcessID() + "[NEW] (arrival time " + p.getArrivalTime() + " ms) " + p.getNumBurst() + " CPU bursts");
+			System.out.println("Process " + p.getProcessID() + " [NEW] (arrival time " + p.getArrivalTime() + " ms) " + p.getNumBurst() + " CPU bursts");
 		}
 		
 		System.out.print("time 0ms: Simulator started for RR " + printQueueContents(this.rq));
@@ -57,8 +54,9 @@ public class RRAlgorithm{
 		Process p = arrival.poll();
 		int count = p.getArrivalTime();
 		this.rq.add(p);
-		System.out.print("time "+count+"ms: Process "+p.getProcessID()+" arrived;added to ready queue "+printQueueContents(this.rq));
+		System.out.print("time "+count+"ms: Process "+p.getProcessID()+" arrived; added to ready queue "+printQueueContents(this.rq));
 		p = this.rq.poll();
+		int past = 0;
 		while(!arrival.isEmpty()||!this.rq.isEmpty()||p.getNumBurst()!=0)
 		{
 			// Add all the process with the same arrival time
@@ -72,11 +70,11 @@ public class RRAlgorithm{
 //				System.out.println(newProcess.getState());
 				if(newProcess.getState()!="BLOCKED"&&(count<=999 || this.full == true))
 				{
-					System.out.print("time "+count+"ms: Process "+p.getProcessID()+" arrived;added to ready queue "+printQueueContents(this.rq));
+					System.out.print("time "+count+"ms: Process "+p.getProcessID()+" arrived; added to ready queue "+printQueueContents(this.rq));
 				}
 				else if((count<=999 || this.full == true))
 				{
-					System.out.print("time "+count+"ms: Process "+p.getProcessID()+" completed I/O;added to ready queue "+printQueueContents(this.rq));
+					System.out.print("time "+count+"ms: Process "+p.getProcessID()+" completed I/O; added to ready queue "+printQueueContents(this.rq));
 				}
 			}
 			
@@ -84,21 +82,51 @@ public class RRAlgorithm{
 			if(p.getState()!="RUNNING") {
 				p.enterCPU(count);
 				count+=cw/2;
+				
+				while(arrival.size()!=0&&arrival.peek().getArrivalTime()<count)
+				{
+					addNewProcess();
+				}
 				if(count<=999 || this.full == true)
 				{
-					System.out.print("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.getRemainingTime()+"ms burst "+printQueueContents(this.rq));
+					if(p.burstTimeGuess==p.burstTimeGuessRecord)
+					{
+						System.out.print("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.getRemainingTime()+"ms burst "+printQueueContents(this.rq));
+					}
+					else
+					{//Process A started using the CPU with 17ms remaining
+						System.out.print("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU with "+p.getRemainingTime()+"ms remaining "+printQueueContents(this.rq));	
+					}
 				}
+				
 			}
 			
 			// Check the time slice versus remaining time of current Process
 			int running = p.getRemainingTime()+p.getEnterTime();
-			int in = this.t_slice+count;
-			count = Math.min(running, in);
+			int expire = this.t_slice+count-past;
 			
+			int peek = Integer.MAX_VALUE;
+			if(arrival.size()>0)
+			{
+				peek = arrival.peek().getArrivalTime();
+			}
+			
+			if(peek<expire && expire< running) 
+			{
+				past = peek-count+past;
+			}
+
+			
+			int maybe = Math.min(running, expire);
+			
+
+			count = Math.min(maybe, peek);
+
 			// The current process will finish before or when the time slice expires 
 			if(count==running) // processes will only complete in this statement
 			{
 //				printQueueContents(rq);
+				
 				p.complete(count);
 				// Still more cpu bursts left
 				if(p.getState()!="COMPLETE") 
@@ -106,7 +134,7 @@ public class RRAlgorithm{
 					p.resetEnterTime();
 					if(count<=999 || this.full == true)
 					{
-						System.out.print("time "+count+"ms: Process "+p.getProcessID()+ " completed a CPU Burst; "+p.getNumBurst()+" bursts to go "+printQueueContents(rq));
+						System.out.print("time "+count+"ms: Process "+p.getProcessID()+ " completed a CPU burst; "+p.getNumBurst()+" bursts to go "+printQueueContents(rq));
 						System.out.print("time "+count+"ms: Process "+p.getProcessID()+" switching out of CPU; will block on I/O until time "+p.getArrivalTime()+"ms "+printQueueContents(this.rq));
 					}
 					
@@ -136,9 +164,9 @@ public class RRAlgorithm{
 					rq.add(p);				
 					// Print the process arrival statements
 					if(p.getState()!="BLOCKED"&& (count<= 999 || full == true))
-						System.out.print("time "+p.getArrivalTime()+"ms: Process "+p.getProcessID()+" arrived;added to ready queue "+printQueueContents(rq));
+						System.out.print("time "+p.getArrivalTime()+"ms: Process "+p.getProcessID()+" arrived; added to ready queue "+printQueueContents(rq));
 					else if((count<= 999 || full == true))
-						System.out.print("time "+p.getArrivalTime()+"ms: Process "+p.getProcessID()+" completed I/O;added to ready queue "+printQueueContents(rq));
+						System.out.print("time "+p.getArrivalTime()+"ms: Process "+p.getProcessID()+" completed I/O; added to ready queue "+printQueueContents(rq));
 					p.enterQueue(count);
 					// Take the statement out
 					p=rq.poll();
@@ -148,9 +176,14 @@ public class RRAlgorithm{
 					
 				}
 //				printQueueContents(rq);
-
+				past = 0;
 			}
-			else // Process finishes after timeslice
+			else if(count == peek)
+			{
+				while(arrival.size()!=0&&arrival.peek().getArrivalTime()==count) 
+					addNewProcess();
+			}
+			else if(count == expire)// Process finishes after timeslice
 			{ 
 //				printQueueContents(rq);
 				if(rq.size()==0) //keep process on cpu, no context switch
@@ -164,14 +197,13 @@ public class RRAlgorithm{
 				else //move stuff off and on queue
 				{
 					p.enterQueue(count);
-					int temp_time = p.numCPUBurst;
 					if (count<=999 || this.full == true)
-					{   //this line is suspect
-						System.out.print("time "+count+"ms: Time slice expired; process "+ p.getProcessID() +" preempted with "+temp_time+" to go "+printQueueContents(this.rq));
+					{    
+						System.out.print("time "+count+"ms: Time slice expired; process "+ p.getProcessID() +" preempted with "+p.getRemainingTime()+"ms to go "+printQueueContents(this.rq));
 					}
+
 					count+=cw/2;
 //					System.out.print("time "+count+"ms: Process "+p.getProcessID()+" arrived;added to ready queue "+printQueueContents(this.rq));
-//					System.out.println("here1");
  					add_to_ready_queue(this.rq, p, "END");//Is end because it didn't just arrive.
 					while(arrival.size()!=0&&arrival.peek().getArrivalTime()==p.getArrivalTime()) 
 					{
@@ -181,10 +213,14 @@ public class RRAlgorithm{
 					p=rq.poll();
  				}
 //				printQueueContents(rq);
-
+				past = 0;
+			}
+			else
+			{
+				System.out.println("it should be impossible to print this");
 			}
 		}
-		System.out.println("time "+count+"ms: Simulator ended for RR [Q empty]");
+		System.out.println("time "+count+"ms: Simulator ended for RR [Q <empty>]");
 	}
 	
 	private void addNewProcess() 
@@ -195,11 +231,17 @@ public class RRAlgorithm{
 		add_to_ready_queue(this.rq, newProcess,this.begin_or_end);//deals with beginning/ end of queue issue
 		if(newProcess.getState()!="BLOCKED"&&newProcess.getArrivalTime()!=-1)
 		{
-			System.out.print("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" arrived;added to ready queue "+printQueueContents(rq));
+			if(newProcess.getArrivalTime()<=999 || this.full)
+			{
+				System.out.print("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" arrived; added to ready queue "+printQueueContents(rq));
+			}
 		}
 		else if(newProcess.getArrivalTime()!=-1)
 		{
-			System.out.print("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" completed I/O;added to ready queue "+printQueueContents(rq));
+			if(newProcess.getArrivalTime()<=999 || this.full)
+			{
+			System.out.print("time "+newProcess.getArrivalTime()+"ms: Process "+newProcess.getProcessID()+" completed I/O; added to ready queue "+printQueueContents(rq));
+			}
 		}
 		newProcess.enterQueue(newProcess.getArrivalTime());
 	}

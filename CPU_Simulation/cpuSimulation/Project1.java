@@ -46,7 +46,7 @@ public class Project1{
 		//SRT.simulate();
 		//System.out.println();
 		
-/*
+
 		FCFSAlgorithm FCFS = new FCFSAlgorithm(seq2,cw);
 		FCFS.simulate();
 		System.out.println();
@@ -58,7 +58,7 @@ public class Project1{
 		writer.println(SJF);
 		writer.println(SRT);
 		writer.println(FCFS);
-		writer.println(RR);*/
+		writer.println(RR);
 		writer.close();
 
 		
