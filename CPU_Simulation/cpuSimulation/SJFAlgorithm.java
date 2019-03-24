@@ -108,7 +108,7 @@ public class SJFAlgorithm {
 				currentProcess.enterCPU(count);
 
 				count+=cw/2;
-				if(arrivalQueue.isEmpty() == false && arrivalQueue.peek().getArrivalTime() <= count) {
+				if(arrivalQueue.isEmpty() == false && arrivalQueue.peek().getArrivalTime() < count) {
 					r = arrivalQueue.poll();
 					Q.add(r);
 					
