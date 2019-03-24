@@ -1,4 +1,6 @@
-	import java.util.ArrayList;
+	import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -209,16 +211,17 @@ public class FCFSAlgorithm {
 		int numCW = this.getTotalCW();
 		int numPreempt = this.getTotalPreempt();
 		
+		NumberFormat formatter = new DecimalFormat("#0.000"); 
 		// Prints
-		sb.append("-- average CPU burst time: "+ String.format("%.3f",avgCPUBurst));
+		sb.append("-- average CPU burst time: "+ formatter.format(avgCPUBurst)+" ms");
 		sb.append("\n");
-		sb.append("-- average wait time: "+ String.format("%.3f",avgWaitTime));
+		sb.append("-- average wait time: "+ formatter.format(avgWaitTime)+" ms");
 		sb.append("\n");
-		sb.append("-- average turnaround time: "+ String.format("%.3f",avgTurnaroundTime));
+		sb.append("-- average turnaround time: "+ formatter.format(avgTurnaroundTime)+" ms");
 		sb.append("\n");
 		sb.append("-- total number of context switches: "+ numCW);
 		sb.append("\n");
-		sb.append("-- total number of preemptions: "+numPreempt);
+		sb.append("-- total number of preemptions: "+ numPreempt);
 		return sb.toString();	
 	}	
 
