@@ -35,9 +35,6 @@ public class SJFAlgorithm {
 		avgCPUBurst = this.getAvgCPUBurst();
 	}
 	
-	
-	
-	
 	public void simulate() {
 		PriorityQueue<Process> copy = new PriorityQueue<>(arrivalQueue);
 		PriorityQueue<Process> print = new PriorityQueue<>(new AlphaComparator());
