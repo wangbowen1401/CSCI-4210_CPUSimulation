@@ -49,7 +49,7 @@ public class FCFSAlgorithm {
 			if(p.getState()!="RUNNING") {
 				p.enterCPU(count);
 				count+=cw/2;
-				while(arrival.size()>0&&count>arrival.peek().getArrivalTime())
+				while(arrival.size()!=0&&count>arrival.peek().getArrivalTime())
 					addNewProcess();
 				if((count<=999 || full == true))
 					System.out.println("time "+count+"ms: Process "+p.getProcessID()+" started using the CPU for "+p.getRemainingTime()+"ms burst "+printQueueContents(rq));
@@ -71,12 +71,12 @@ public class FCFSAlgorithm {
 						else{
 							System.out.println("time "+count+"ms: Process "+p.getProcessID()+ " completed a CPU burst; "+p.getNumBurst()+" burst to go "+printQueueContents(rq));
 						}
+						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" switching out of CPU; will block on I/O until time "+p.getArrivalTime()+"ms "+printQueueContents(rq));
 					}
 					
 					p.resetEnterTime();
 					arrival.add(p);
-					if((count<=999 || this.full == true))
-						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" switching out of CPU; will block on I/O until time "+p.getArrivalTime()+"ms "+printQueueContents(rq));
+						
 				}
 				// Completed all the cpu and io bursts, added to arrayList for analysis
 				else {
@@ -92,20 +92,18 @@ public class FCFSAlgorithm {
 				}
 				else if(arrival.size()!=0){
 					p=arrival.poll();
-					count = p.getArrivalTime();
+					if(count <= p.getArrivalTime()){
+                        count = p.getArrivalTime();
+
+                    }
 					rq.add(p);
 					if(p.getState()!="BLOCKED"&&(count<=999 || this.full == true))
 						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" arrived; added to ready queue "+printQueueContents(rq));
 					else if((count<=999 || this.full == true))
 						System.out.println("time "+count+"ms: Process "+p.getProcessID()+" completed I/O; added to ready queue "+printQueueContents(rq));
-					p.enterQueue(count);
+					p.enterQueue(p.getArrivalTime());
 					while(arrival.size()!=0&&arrival.peek().getArrivalTime()==p.getArrivalTime()) {
-						Process newProcess=arrival.poll();
-						rq.add(newProcess);
-						if(newProcess.getState()!="BLOCKED"&&(count<=999 || this.full == true))
-							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" arrived; added to ready queue "+printQueueContents(rq));
-						else if((count<=999 || this.full == true))
-							System.out.println("time "+count+"ms: Process "+newProcess.getProcessID()+" completed I/O; added to ready queue "+printQueueContents(rq));
+						addNewProcess();
 					}
 					p=rq.poll();
 				}

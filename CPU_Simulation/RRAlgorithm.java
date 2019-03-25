@@ -149,7 +149,6 @@ public class RRAlgorithm{
                     
                         System.out.print("time "+count+"ms: Process "+p.getProcessID()+" switching out of CPU; will block on I/O until time "+p.getArrivalTime()+"ms "+printQueueContents(this.rq));
                     }
-//                    System.out.println(count+","+cw/2);
                     
                     arrival.add(p);
                     
@@ -189,7 +188,7 @@ public class RRAlgorithm{
                     else if((count<= 999 || full == true))
                     {    System.out.print("time "+p.getArrivalTime()+"ms: Process "+p.getProcessID()+" completed I/O; added to ready queue "+printQueueContents(rq));}
                     
-                    p.enterQueue(count);
+                    p.enterQueue(p.getArrivalTime());
                     p=rq.poll();
                     
                     // Add any new process with same arrival time

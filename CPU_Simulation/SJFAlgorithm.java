@@ -252,9 +252,6 @@ public class SJFAlgorithm {
 					}
 					
 					currentProcess = Q.poll();
-
-//					count +=cw/2;
-//					System.out.println("Next process is: " + currentProcess.getProcessID());
 				}
 			}
 			else {

@@ -127,7 +127,7 @@ public class SRTAlgorithm{
 						System.out.println("time "+p.getArrivalTime()+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) arrived; added to ready queue "+printQueueContents(rq));
 					else if((count<= 999 || full == true))
 						System.out.println("time "+p.getArrivalTime()+"ms: Process "+p.getProcessID()+" (tau "+p.getTimeGuess()+"ms) completed I/O; added to ready queue "+printQueueContents(rq));
-					p.enterQueue(count);
+					p.enterQueue(p.getArrivalTime());
 					// Take the statement out
 					p=rq.poll();
 					// Add any new process with same arrival time
@@ -155,7 +155,7 @@ public class SRTAlgorithm{
 					while(!arrival.isEmpty()&&arrival.peek().getArrivalTime()<=	count) {
 						addNewProcess();
 						// Preempting a premption
-						if(rq.peek().getTimeGuess()<p.getTimeGuess()) {
+						while(rq.peek().getTimeGuess()<p.getTimeGuess()) {
 							p.enterQueue(count-cw/2);
 							rq.add(p);
 							p = rq.poll();
